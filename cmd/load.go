@@ -22,22 +22,15 @@ package cmd
 
 import (
 	"bytes"
-	"compress/gzip"
-	"encoding/base64"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/ovotech/helm-bulk/utils"
 	"github.com/spf13/cobra"
 	"k8s.io/helm/pkg/helm"
 	"k8s.io/helm/pkg/proto/hapi/release"
-	//"k8s.io/helm/_proto/hapi/rudder"
 )
-
-var b64 = base64.StdEncoding
-
-var magicGzip = []byte{0x1f, 0x8b, 0x08}
 
 // loadCmd represents the load command
 var loadCmd = &cobra.Command{
@@ -50,8 +43,10 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("load called")
-		load()
+		log.Println("helm-bulk load called")
+		releases := releases()
+		logReleasesFound(releases)
+		load(releases)
 	},
 }
 
@@ -69,72 +64,79 @@ func init() {
 	// loadCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func load() {
+//logReleasesFound log.Println's the names of releases, or a message indicating
+//none were found
+func logReleasesFound(releases []*release.Release) {
+	if len(releases) > 0 {
+		var buffer bytes.Buffer
+		buffer.WriteString("Found Helm Releases to load:")
+		buffer.WriteString("\n")
+		for _, release := range releases {
+			buffer.WriteString(release.GetName())
+			buffer.WriteString("\n")
+		}
+		log.Println(buffer.String())
+	} else {
+		log.Println("No Helm Releases found to load")
+	}
+
+}
+
+//releases decodes the release file and returns a slice of releases
+func releases() (releases []*release.Release) {
 	dat, err := ioutil.ReadFile("helm-releases.txt")
-	check(err)
+	panicCheck(err)
 	for _, splitString := range strings.Split(string(dat), ",") {
-		rel, err := decodeRelease(splitString)
-		check(err)
-		fmt.Println(rel.Name)
+		release, err := utils.DecodeRelease(splitString)
+		panicCheck(err)
+		releases = append(releases, release)
+	}
+	return
+}
+
+//load attempts to install each release in the provided slice.
+//If an error is encountered in doing so, it logs the failure and skips to the
+//next element in the slice
+func load(releases []*release.Release) {
+	for _, release := range releases {
+		releaseName := release.GetName()
+		log.Println("loading release:", releaseName)
 		client := helm.NewClient(helm.Host("127.0.0.1:44134"))
-		var disableHooks = true
-		var releaseName = rel.GetName()
-		var namespace = rel.GetNamespace()
-		var reuseName = true
-		var dryRun = true
-		//var chartName = rel.GetChart().GetMetadata().GetName()
-		//var overrides = []byte("key1=value1,key2=value2")
-		var overrides = []byte(rel.GetChart().GetValues().String())
-
-		// Options used in InstallRelease
-		ops := []helm.InstallOption{
-			helm.ValueOverrides(overrides),
-			helm.InstallDryRun(dryRun),
-			helm.ReleaseName(releaseName),
-			helm.InstallReuseName(reuseName),
-			helm.InstallDisableHooks(disableHooks),
+		options := options(release)
+		resp, err := client.InstallReleaseFromChart(release.Chart,
+			release.GetNamespace(), options...)
+		if err != nil {
+			log.Println("loading of release:", releaseName, " failed:", err.Error())
+			continue
 		}
-		client.InstallReleaseFromChart(rel.Chart, namespace, ops...)
+		log.Println(releaseName, "'helm install' response status:",
+			resp.GetRelease().GetInfo().GetStatus().GetCode())
 	}
 }
 
-// decodeRelease decodes the bytes in data into a release
-// type. Data must contain a base64 encoded string of a
-// valid protobuf encoding of a release, otherwise
-// an error is returned.
-func decodeRelease(data string) (*release.Release, error) {
-	// base64 decode string
-	b, err := b64.DecodeString(data)
-	if err != nil {
-		return nil, err
+//options creates and returns a slice of InstallOptions, of which some fields
+//are grabbed from the provided release
+func options(release *release.Release) (options []helm.InstallOption) {
+	var disableHooks = true
+	var releaseName = release.GetName()
+	var reuseName = false
+	var dryRun = true
+	cv := release.GetChart().GetValues()
+	var overrides = []byte(cv.Raw)
+	options = []helm.InstallOption{
+		helm.ValueOverrides(overrides),
+		helm.InstallDryRun(dryRun),
+		helm.ReleaseName(releaseName),
+		helm.InstallReuseName(reuseName),
+		helm.InstallDisableHooks(disableHooks),
 	}
-
-	// For backwards compatibility with releases that were stored before
-	// compression was introduced we skip decompression if the
-	// gzip magic header is not found
-	if bytes.Equal(b[0:3], magicGzip) {
-		r, err := gzip.NewReader(bytes.NewReader(b))
-		if err != nil {
-			return nil, err
-		}
-		b2, err := ioutil.ReadAll(r)
-		if err != nil {
-			return nil, err
-		}
-		b = b2
-	}
-
-	var rls release.Release
-	// unmarshal protobuf bytes
-	if err := proto.Unmarshal(b, &rls); err != nil {
-		return nil, err
-	}
-	return &rls, nil
+	return
 }
 
-//check panics if error is not nil
-func check(e error) {
+//panicCheck panics if error is not nil
+func panicCheck(e error) {
 	if e != nil {
-		panic(e.Error())
+		log.Panic(e.Error())
+		//panic(e.Error())
 	}
 }

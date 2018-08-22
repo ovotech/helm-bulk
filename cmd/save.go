@@ -22,14 +22,13 @@ package cmd
 
 import (
 	"bytes"
-	"compress/gzip"
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/ovotech/helm-bulk/utils"
 	"github.com/spf13/cobra"
 	"k8s.io/helm/pkg/helm"
 	"k8s.io/helm/pkg/proto/hapi/release"
@@ -46,7 +45,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("save called")
+		log.Println("helm-bulk save called")
 		save()
 	},
 }
@@ -65,50 +64,31 @@ func init() {
 	// saveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
+//save obtains a slice of deployed releases, base64 encodes each release, adds
+//the base64 string to a buffer, which it then writes to file.
 func save() {
 	client := helm.NewClient(helm.Host("127.0.0.1:44134"))
 	var statusFilter = helm.ReleaseListStatuses([]release.Status_Code{
 		release.Status_DEPLOYED,
 	})
 	releaseResp, err := client.ListReleases(statusFilter)
-	check(err)
-
+	panicCheck(err)
 	var buffer bytes.Buffer
 	for i, release := range releaseResp.Releases {
 		if i > 0 {
 			buffer.WriteString(",")
 		}
-		sEnc, err := encodeRelease(release)
-		check(err)
+		sEnc, err := utils.EncodeRelease(release)
+		panicCheck(err)
 		buffer.WriteString(sEnc)
-		//When decoding back the other way:
-		//rel, err := decodeRelease(sEnc)
 	}
-
-	check(ioutil.WriteFile("helm-releases.txt", buffer.Bytes(), os.FileMode.Perm(0644)))
-	check(ioutil.WriteFile("checksum.txt", md5Hash(buffer.String()), os.FileMode.Perm(0644)))
+	panicCheck(ioutil.WriteFile("helm-releases.txt", buffer.Bytes(),
+		os.FileMode.Perm(0644)))
+	panicCheck(ioutil.WriteFile("checksum.txt", md5Hash(buffer.String()),
+		os.FileMode.Perm(0644)))
 }
 
-// encodeRelease encodes a release returning a base64 encoded
-// gzipped binary protobuf encoding representation, or error.
-func encodeRelease(rls *release.Release) (string, error) {
-	b, err := proto.Marshal(rls)
-	if err != nil {
-		return "", err
-	}
-	var buf bytes.Buffer
-	w, err := gzip.NewWriterLevel(&buf, gzip.BestCompression)
-	if err != nil {
-		return "", err
-	}
-	if _, err = w.Write(b); err != nil {
-		return "", err
-	}
-	w.Close()
-
-	return b64.EncodeToString(buf.Bytes()), nil
-}
-
+//md5Hash returns a byte slice representing the md5 hash of the provided string
 func md5Hash(text string) []byte {
 	hasher := md5.New()
 	hasher.Write([]byte(text))
