@@ -37,13 +37,9 @@ import (
 // saveCmd represents the save command
 var saveCmd = &cobra.Command{
 	Use:   "save",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Save Releases from Cluster to File",
+	Long: `This command will base64 encode current deployed Helm Releases, and
+			write them to File.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("helm-bulk save called")
 		save()
