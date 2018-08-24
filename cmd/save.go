@@ -48,16 +48,6 @@ var saveCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(saveCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// saveCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// saveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 //save obtains a slice of deployed releases, base64 encodes each release, adds
@@ -70,7 +60,7 @@ func save() {
 	releaseResp, err := client.ListReleases(statusFilter)
 	panicCheck(err)
 	var buffer bytes.Buffer
-	for i, release := range releaseResp.Releases {
+	for i, release := range releaseResp.GetReleases() {
 		if i > 0 {
 			buffer.WriteString(",")
 		}
@@ -78,7 +68,7 @@ func save() {
 		panicCheck(err)
 		buffer.WriteString(sEnc)
 	}
-	panicCheck(ioutil.WriteFile("helm-releases.txt", buffer.Bytes(),
+	panicCheck(ioutil.WriteFile(fileName, buffer.Bytes(),
 		os.FileMode.Perm(0644)))
 	panicCheck(ioutil.WriteFile("checksum.txt", md5Hash(buffer.String()),
 		os.FileMode.Perm(0644)))
