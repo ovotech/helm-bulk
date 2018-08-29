@@ -42,10 +42,10 @@ var (
 	 and 'Helm install' those Releases with the same Chart and Values.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			log.Println("helm-bulk load called")
+			client := utils.Client(local)
 			if dryRun {
 				log.Println("*** operating in dry-run mode ***")
 			}
-			client := helm.NewClient(helm.Host("127.0.0.1:44134"))
 			loadedReleases := Releases()
 			if len(loadedReleases) > 0 {
 				logReleases(loadedReleases, "Helm Releases to load:")
@@ -70,8 +70,9 @@ var (
 )
 
 func init() {
-	loadCmd.Flags().BoolVarP(&dryRun, "dry-run", "d", false,
-		"Uses helm --dry-run internally for any deletes/installs/upgrades")
+	loadCmd.Flags().BoolVarP(&dryRun, "dry-run", "r", false,
+		"Performs a no-op run, essentially just logging to indicate what would be"+
+			" done without dry-run enabled")
 	loadCmd.Flags().BoolVarP(&nonAuthoritative, "non-authoritive", "n", false,
 		"The file that Releases are loaded from is considered non-authoritative,"+
 			" so helm-bulk can handle Releases that already exist (using helm upgrade)")
@@ -104,10 +105,10 @@ func logReleases(releases []*release.Release, header string) {
 //Releases decodes the Release file and returns a slice of Releases
 func Releases() (releases []*release.Release) {
 	dat, err := ioutil.ReadFile(fileName)
-	panicCheck(err)
+	utils.PanicCheck(err)
 	for _, splitString := range strings.Split(string(dat), ",") {
 		release, err := utils.DecodeRelease(splitString)
-		panicCheck(err)
+		utils.PanicCheck(err)
 		releases = append(releases, release)
 	}
 	return
@@ -123,11 +124,11 @@ func splitReleases(loadedReleases []*release.Release,
 		release.Status_DEPLOYED,
 	})
 	releaseResp, err := client.ListReleases(statusFilter)
-	panicCheck(err)
+	utils.PanicCheck(err)
 	for _, release := range releaseResp.GetReleases() {
 		existingReleases = append(existingReleases, release)
 	}
-	panicCheck(err)
+	utils.PanicCheck(err)
 	for _, release := range loadedReleases {
 		if !containsRelease(release, existingReleases) {
 			releases = append(releases, release)
@@ -204,7 +205,7 @@ func purge(releasesToPurge []*release.Release, client *helm.Client) {
 			releaseName := release.GetName()
 			log.Println("Purging Release:", releaseName)
 			resp, err := client.DeleteRelease(releaseName, deleteOptions()...)
-			panicCheck(err)
+			utils.PanicCheck(err)
 			log.Println(releaseName, "helm delete response status:",
 				resp.GetRelease().GetInfo().GetStatus().GetCode().String())
 		}
@@ -276,11 +277,4 @@ func installOptions(release *release.Release) (installOptions []helm.InstallOpti
 		helm.InstallDisableHooks(disableHooks),
 	}
 	return
-}
-
-//panicCheck panics if error is not nil
-func panicCheck(e error) {
-	if e != nil {
-		log.Panic(e.Error())
-	}
 }
