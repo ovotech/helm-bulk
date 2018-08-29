@@ -53,24 +53,24 @@ func init() {
 //save obtains a slice of deployed releases, base64 encodes each release, adds
 //the base64 string to a buffer, which it then writes to file.
 func save() {
-	client := helm.NewClient(helm.Host("127.0.0.1:44134"))
+	client := utils.Client(local)
 	var statusFilter = helm.ReleaseListStatuses([]release.Status_Code{
 		release.Status_DEPLOYED,
 	})
 	releaseResp, err := client.ListReleases(statusFilter)
-	panicCheck(err)
+	utils.PanicCheck(err)
 	var buffer bytes.Buffer
 	for i, release := range releaseResp.GetReleases() {
 		if i > 0 {
 			buffer.WriteString(",")
 		}
 		sEnc, err := utils.EncodeRelease(release)
-		panicCheck(err)
+		utils.PanicCheck(err)
 		buffer.WriteString(sEnc)
 	}
-	panicCheck(ioutil.WriteFile(fileName, buffer.Bytes(),
+	utils.PanicCheck(ioutil.WriteFile(fileName, buffer.Bytes(),
 		os.FileMode.Perm(0644)))
-	panicCheck(ioutil.WriteFile("checksum.txt", md5Hash(buffer.String()),
+	utils.PanicCheck(ioutil.WriteFile("checksum.txt", md5Hash(buffer.String()),
 		os.FileMode.Perm(0644)))
 }
 
