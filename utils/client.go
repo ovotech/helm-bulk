@@ -17,6 +17,6 @@ func Client(local bool) (client *helm.Client) {
 	log.Println("Checking Helm client connection")
 	_, err := client.GetVersion()
 	PanicCheck(err)
-	log.Println("connection: OK")
+	log.Println("Connection: OK")
 	return
 }

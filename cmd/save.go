@@ -70,13 +70,20 @@ func save() {
 	}
 	utils.PanicCheck(ioutil.WriteFile(fileName, buffer.Bytes(),
 		os.FileMode.Perm(0644)))
-	utils.PanicCheck(ioutil.WriteFile("checksum.txt", md5Hash(buffer.String()),
+	log.Println("Wrote Helm Releases to file: ./" + fileName)
+	md5Hash := md5Hash(buffer.String())
+	checksumFilename := "checksum.txt"
+	utils.PanicCheck(ioutil.WriteFile(checksumFilename, []byte(md5Hash),
 		os.FileMode.Perm(0644)))
+	log.Println("Wrote Release file md5 hash to file (" + checksumFilename +
+		"), md5Hash: " + md5Hash)
+
 }
 
 //md5Hash returns a byte slice representing the md5 hash of the provided string
-func md5Hash(text string) []byte {
+func md5Hash(text string) (hash string) {
 	hasher := md5.New()
 	hasher.Write([]byte(text))
-	return []byte(hex.EncodeToString(hasher.Sum(nil)))
+	hash = hex.EncodeToString(hasher.Sum(nil))
+	return
 }
