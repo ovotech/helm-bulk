@@ -43,18 +43,24 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			log.Println("helm-bulk load called")
 			if dryRun {
-				log.Println("operating in dry-run mode, helm operations will be run" +
-					" in dry-run mode too, meaning installs/upgrades may be returned" +
-					" as pending")
+				log.Println("*** operating in dry-run mode ***")
 			}
 			client := helm.NewClient(helm.Host("127.0.0.1:44134"))
-			loadedReleases := releases()
-			if !nonAuthoritative {
-				_, updateReleases := splitReleases(loadedReleases, client)
+			loadedReleases := Releases()
+			if len(loadedReleases) > 0 {
+				logReleases(loadedReleases, "Helm Releases to load:")
+			} else {
+				panic("No Helm Releases found, they're essential for the Load cmd")
+			}
+			_, updateReleases := splitReleases(loadedReleases, client)
+			if nonAuthoritative {
+				logReleases(updateReleases, "Helm Releases to update:")
+			} else {
+				logReleases(updateReleases,
+					"Existing Helm Releases to purge (prior to reinstall):")
 				purge(updateReleases, client)
 			}
 			installReleases, updateReleases := splitReleases(loadedReleases, client)
-			logReleases(loadedReleases, updateReleases)
 			load(installReleases, updateReleases, client)
 		},
 	}
@@ -85,27 +91,18 @@ func addReleasesToBuffer(releases []*release.Release, buffer *bytes.Buffer) *byt
 //logReleases logs the names of Releases i) loaded from file and (of those)
 //ii) currently installed, or a message indicating no Releases were loaded from
 //file
-func logReleases(releases, existingReleases []*release.Release) {
+func logReleases(releases []*release.Release, header string) {
 	if len(releases) > 0 {
 		var buffer bytes.Buffer
-		buffer.WriteString("Found Helm Releases to load:")
+		buffer.WriteString(header)
 		buffer.WriteString("\n\n")
 		addReleasesToBuffer(releases, &buffer)
-		if len(existingReleases) > 0 {
-			buffer.WriteString("\n")
-			buffer.WriteString("..of those, the following are already installed" +
-				" (so will result in a 'helm upgrade' rather than 'helm install'):")
-			buffer.WriteString("\n\n")
-			addReleasesToBuffer(existingReleases, &buffer)
-		}
 		log.Println(buffer.String())
-	} else {
-		log.Println("No Helm Releases found to load")
 	}
 }
 
-//releases decodes the Release file and returns a slice of Releases
-func releases() (releases []*release.Release) {
+//Releases decodes the Release file and returns a slice of Releases
+func Releases() (releases []*release.Release) {
 	dat, err := ioutil.ReadFile(fileName)
 	panicCheck(err)
 	for _, splitString := range strings.Split(string(dat), ",") {
@@ -156,11 +153,13 @@ func containsRelease(queryRelease *release.Release,
 //that need Upgrading, invoking the func that actually runs through the loading
 func load(installReleases, updateReleases []*release.Release,
 	client *helm.Client) {
-	for _, release := range installReleases {
-		loadRelease(release, true, client)
-	}
-	for _, release := range updateReleases {
-		loadRelease(release, false, client)
+	if !dryRun {
+		for _, release := range installReleases {
+			loadRelease(release, true, client)
+		}
+		for _, release := range updateReleases {
+			loadRelease(release, false, client)
+		}
 	}
 }
 
@@ -195,18 +194,20 @@ func loadRelease(release *release.Release, install bool, client *helm.Client) {
 
 //purge deletes the provided releases
 func purge(releasesToPurge []*release.Release, client *helm.Client) {
-	var buffer bytes.Buffer
-	buffer.WriteString("About to purge existing releases:")
-	buffer.WriteString("\n\n")
-	addReleasesToBuffer(releasesToPurge, &buffer)
-	log.Println(buffer.String())
-	for _, release := range releasesToPurge {
-		releaseName := release.GetName()
-		log.Println("Purging Release:", releaseName)
-		resp, err := client.DeleteRelease(releaseName, deleteOptions()...)
-		panicCheck(err)
-		log.Println(releaseName, "helm delete response status:",
-			resp.GetRelease().GetInfo().GetStatus().GetCode().String())
+	if !dryRun && len(releasesToPurge) > 0 {
+		var buffer bytes.Buffer
+		buffer.WriteString("About to purge existing releases:")
+		buffer.WriteString("\n\n")
+		addReleasesToBuffer(releasesToPurge, &buffer)
+		log.Println(buffer.String())
+		for _, release := range releasesToPurge {
+			releaseName := release.GetName()
+			log.Println("Purging Release:", releaseName)
+			resp, err := client.DeleteRelease(releaseName, deleteOptions()...)
+			panicCheck(err)
+			log.Println(releaseName, "helm delete response status:",
+				resp.GetRelease().GetInfo().GetStatus().GetCode().String())
+		}
 	}
 }
 
@@ -231,8 +232,9 @@ func logReleaseStatusCode(releaseName, statusString string, install bool) {
 //deleteOptions creates and returns a slice of DeleteOptions
 func deleteOptions() (deleteOptions []helm.DeleteOption) {
 	deletePurge := true
+	deleteDryRun := false
 	deleteOptions = []helm.DeleteOption{
-		helm.DeleteDryRun(dryRun),
+		helm.DeleteDryRun(deleteDryRun),
 		helm.DeletePurge(deletePurge),
 	}
 	return
@@ -244,11 +246,12 @@ func updateOptions(release *release.Release) (updateOptions []helm.UpdateOption)
 	disableHooks := true
 	reuseValues := true
 	forceUpgrade := true
+	updateDryRun := false
 	cv := release.GetConfig()
 	overrides := []byte(cv.Raw)
 	updateOptions = []helm.UpdateOption{
 		helm.UpdateValueOverrides(overrides),
-		helm.UpgradeDryRun(dryRun),
+		helm.UpgradeDryRun(updateDryRun),
 		helm.ReuseValues(reuseValues),
 		helm.UpgradeForce(forceUpgrade),
 		helm.UpgradeDisableHooks(disableHooks),
@@ -261,12 +264,13 @@ func updateOptions(release *release.Release) (updateOptions []helm.UpdateOption)
 func installOptions(release *release.Release) (installOptions []helm.InstallOption) {
 	disableHooks := true
 	reuseName := true
+	installDryRun := false
 	releaseName := release.GetName()
 	cv := release.GetConfig()
 	var overrides = []byte(cv.Raw)
 	installOptions = []helm.InstallOption{
 		helm.ValueOverrides(overrides),
-		helm.InstallDryRun(dryRun),
+		helm.InstallDryRun(installDryRun),
 		helm.ReleaseName(releaseName),
 		helm.InstallReuseName(reuseName),
 		helm.InstallDisableHooks(disableHooks),
