@@ -186,11 +186,11 @@ const (
 	// init/join time for use later. kubeadm annotates the node object with this information
 	AnnotationKubeadmCRISocket = "kubeadm.alpha.kubernetes.io/cri-socket"
 
-	// MasterConfigurationConfigMap specifies in what ConfigMap in the kube-system namespace the `kubeadm init` configuration should be stored
-	MasterConfigurationConfigMap = "kubeadm-config"
+	// InitConfigurationConfigMap specifies in what ConfigMap in the kube-system namespace the `kubeadm init` configuration should be stored
+	InitConfigurationConfigMap = "kubeadm-config"
 
-	// MasterConfigurationConfigMapKey specifies in what ConfigMap key the master configuration should be stored
-	MasterConfigurationConfigMapKey = "MasterConfiguration"
+	// InitConfigurationConfigMapKey specifies in what ConfigMap key the master configuration should be stored
+	InitConfigurationConfigMapKey = "InitConfiguration"
 
 	// KubeletBaseConfigurationConfigMapPrefix specifies in what ConfigMap in the kube-system namespace the initial remote configuration of kubelet should be stored
 	KubeletBaseConfigurationConfigMapPrefix = "kubelet-config-"
@@ -285,6 +285,24 @@ const (
 
 	// CoreDNSVersion is the version of CoreDNS to be deployed if it is used
 	CoreDNSVersion = "1.1.3"
+
+	// InitConfigurationKind is the string kind value for the InitConfiguration struct
+	InitConfigurationKind = "InitConfiguration"
+
+	// MasterConfigurationKind is the string kind value for the v1alpha2-named MasterConfiguration struct
+	// In v1alpha3 and higher, this struct is now named InitConfiguration
+	MasterConfigurationKind = "MasterConfiguration"
+
+	// JoinConfigurationKind is the string kind value for the JoinConfiguration struct
+	JoinConfigurationKind = "JoinConfiguration"
+
+	// NodeConfigurationKind is the string kind value for the v1alpha2-named NodeConfiguration struct
+	// In v1alpha3 and higher, this struct is now named JoinConfiguration
+	NodeConfigurationKind = "NodeConfiguration"
+
+	// YAMLDocumentSeparator is the separator for YAML documents
+	// TODO: Find a better place for this constant
+	YAMLDocumentSeparator = "---\n"
 )
 
 var (

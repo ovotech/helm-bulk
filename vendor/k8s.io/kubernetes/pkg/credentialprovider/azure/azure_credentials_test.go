@@ -43,25 +43,19 @@ func Test(t *testing.T) {
 		{
 			Name: to.StringPtr("foo"),
 			RegistryProperties: &containerregistry.RegistryProperties{
-				LoginServer: to.StringPtr("*.azurecr.io"),
+				LoginServer: to.StringPtr("foo-microsoft.azurecr.io"),
 			},
 		},
 		{
 			Name: to.StringPtr("bar"),
 			RegistryProperties: &containerregistry.RegistryProperties{
-				LoginServer: to.StringPtr("*.azurecr.cn"),
+				LoginServer: to.StringPtr("bar-microsoft.azurecr.io"),
 			},
 		},
 		{
 			Name: to.StringPtr("baz"),
 			RegistryProperties: &containerregistry.RegistryProperties{
-				LoginServer: to.StringPtr("*.azurecr.de"),
-			},
-		},
-		{
-			Name: to.StringPtr("bus"),
-			RegistryProperties: &containerregistry.RegistryProperties{
-				LoginServer: to.StringPtr("*.azurecr.us"),
+				LoginServer: to.StringPtr("baz-microsoft.azurecr.io"),
 			},
 		},
 	}

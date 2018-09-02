@@ -31,7 +31,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	cadvisorapi "github.com/google/cadvisor/info/v1"
-	cadvisorapiv2 "github.com/google/cadvisor/info/v2"
 	"k8s.io/api/core/v1"
 	apiequality "k8s.io/apimachinery/pkg/api/equality"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -49,6 +48,7 @@ import (
 	core "k8s.io/client-go/testing"
 	fakecloud "k8s.io/kubernetes/pkg/cloudprovider/providers/fake"
 	kubeletapis "k8s.io/kubernetes/pkg/kubelet/apis"
+	cadvisortest "k8s.io/kubernetes/pkg/kubelet/cadvisor/testing"
 	"k8s.io/kubernetes/pkg/kubelet/cm"
 	kubecontainer "k8s.io/kubernetes/pkg/kubelet/container"
 	"k8s.io/kubernetes/pkg/kubelet/util/sliceutils"
@@ -260,15 +260,16 @@ func TestNodeStatusWithCloudProviderNodeIP(t *testing.T) {
 			Err:       nil,
 		}
 		kubelet.cloud = fakeCloud
-		kubelet.cloudproviderRequestParallelism = make(chan int, 1)
-		kubelet.cloudproviderRequestSync = make(chan int)
-		kubelet.cloudproviderRequestTimeout = 10 * time.Second
+		kubelet.cloudResourceSyncManager = NewCloudResourceSyncManager(kubelet.cloud, kubelet.nodeName, kubelet.nodeStatusUpdateFrequency)
+		stopCh := make(chan struct{})
+		go kubelet.cloudResourceSyncManager.Run(stopCh)
 		kubelet.nodeIPValidator = func(nodeIP net.IP) error {
 			return nil
 		}
 
 		// execute method
 		err := kubelet.setNodeAddress(&existingNode)
+		close(stopCh)
 		if err != nil && !testCase.shouldError {
 			t.Errorf("Unexpected error for test %s: %q", testCase.name, err)
 			continue
@@ -359,27 +360,6 @@ func TestUpdateNewNodeStatus(t *testing.T) {
 				NumCores:       2,
 				MemoryCapacity: 10E9, // 10G
 			}
-			mockCadvisor := testKubelet.fakeCadvisor
-			mockCadvisor.On("Start").Return(nil)
-			mockCadvisor.On("MachineInfo").Return(machineInfo, nil)
-			versionInfo := &cadvisorapi.VersionInfo{
-				KernelVersion:      "3.16.0-0.bpo.4-amd64",
-				ContainerOsVersion: "Debian GNU/Linux 7 (wheezy)",
-			}
-			mockCadvisor.On("ImagesFsInfo").Return(cadvisorapiv2.FsInfo{
-				Usage:     400,
-				Capacity:  5000,
-				Available: 600,
-			}, nil)
-			mockCadvisor.On("RootFsInfo").Return(cadvisorapiv2.FsInfo{
-				Usage:     400,
-				Capacity:  5000,
-				Available: 600,
-			}, nil)
-			mockCadvisor.On("VersionInfo").Return(versionInfo, nil)
-			maxAge := 0 * time.Second
-			options := cadvisorapiv2.RequestOptions{IdType: cadvisorapiv2.TypeName, Count: 2, Recursive: false, MaxAge: &maxAge}
-			mockCadvisor.On("ContainerInfoV2", "/", options).Return(map[string]cadvisorapiv2.ContainerInfo{}, nil)
 			kubelet.machineInfo = machineInfo
 
 			expectedNode := &v1.Node{
@@ -432,8 +412,8 @@ func TestUpdateNewNodeStatus(t *testing.T) {
 						MachineID:               "123",
 						SystemUUID:              "abc",
 						BootID:                  "1b3",
-						KernelVersion:           "3.16.0-0.bpo.4-amd64",
-						OSImage:                 "Debian GNU/Linux 7 (wheezy)",
+						KernelVersion:           cadvisortest.FakeKernelVersion,
+						OSImage:                 cadvisortest.FakeContainerOsVersion,
 						OperatingSystem:         goruntime.GOOS,
 						Architecture:            goruntime.GOARCH,
 						ContainerRuntimeVersion: "test://1.5.0",
@@ -564,8 +544,6 @@ func TestUpdateExistingNodeStatus(t *testing.T) {
 		},
 	}
 	kubeClient.ReactionChain = fake.NewSimpleClientset(&v1.NodeList{Items: []v1.Node{existingNode}}).ReactionChain
-	mockCadvisor := testKubelet.fakeCadvisor
-	mockCadvisor.On("Start").Return(nil)
 	machineInfo := &cadvisorapi.MachineInfo{
 		MachineID:      "123",
 		SystemUUID:     "abc",
@@ -573,25 +551,6 @@ func TestUpdateExistingNodeStatus(t *testing.T) {
 		NumCores:       2,
 		MemoryCapacity: 20E9,
 	}
-	mockCadvisor.On("MachineInfo").Return(machineInfo, nil)
-	versionInfo := &cadvisorapi.VersionInfo{
-		KernelVersion:      "3.16.0-0.bpo.4-amd64",
-		ContainerOsVersion: "Debian GNU/Linux 7 (wheezy)",
-	}
-	mockCadvisor.On("ImagesFsInfo").Return(cadvisorapiv2.FsInfo{
-		Usage:     400,
-		Capacity:  5000,
-		Available: 600,
-	}, nil)
-	mockCadvisor.On("RootFsInfo").Return(cadvisorapiv2.FsInfo{
-		Usage:     400,
-		Capacity:  5000,
-		Available: 600,
-	}, nil)
-	mockCadvisor.On("VersionInfo").Return(versionInfo, nil)
-	maxAge := 0 * time.Second
-	options := cadvisorapiv2.RequestOptions{IdType: cadvisorapiv2.TypeName, Count: 2, Recursive: false, MaxAge: &maxAge}
-	mockCadvisor.On("ContainerInfoV2", "/", options).Return(map[string]cadvisorapiv2.ContainerInfo{}, nil)
 	kubelet.machineInfo = machineInfo
 
 	expectedNode := &v1.Node{
@@ -644,8 +603,8 @@ func TestUpdateExistingNodeStatus(t *testing.T) {
 				MachineID:               "123",
 				SystemUUID:              "abc",
 				BootID:                  "1b3",
-				KernelVersion:           "3.16.0-0.bpo.4-amd64",
-				OSImage:                 "Debian GNU/Linux 7 (wheezy)",
+				KernelVersion:           cadvisortest.FakeKernelVersion,
+				OSImage:                 cadvisortest.FakeContainerOsVersion,
 				OperatingSystem:         goruntime.GOOS,
 				Architecture:            goruntime.GOARCH,
 				ContainerRuntimeVersion: "test://1.5.0",
@@ -795,8 +754,6 @@ func TestUpdateNodeStatusWithRuntimeStateError(t *testing.T) {
 	kubeClient := testKubelet.fakeKubeClient
 	existingNode := v1.Node{ObjectMeta: metav1.ObjectMeta{Name: testKubeletHostname}}
 	kubeClient.ReactionChain = fake.NewSimpleClientset(&v1.NodeList{Items: []v1.Node{existingNode}}).ReactionChain
-	mockCadvisor := testKubelet.fakeCadvisor
-	mockCadvisor.On("Start").Return(nil)
 	machineInfo := &cadvisorapi.MachineInfo{
 		MachineID:      "123",
 		SystemUUID:     "abc",
@@ -804,25 +761,6 @@ func TestUpdateNodeStatusWithRuntimeStateError(t *testing.T) {
 		NumCores:       2,
 		MemoryCapacity: 10E9,
 	}
-	mockCadvisor.On("MachineInfo").Return(machineInfo, nil)
-	versionInfo := &cadvisorapi.VersionInfo{
-		KernelVersion:      "3.16.0-0.bpo.4-amd64",
-		ContainerOsVersion: "Debian GNU/Linux 7 (wheezy)",
-	}
-
-	mockCadvisor.On("VersionInfo").Return(versionInfo, nil)
-	maxAge := 0 * time.Second
-	options := cadvisorapiv2.RequestOptions{IdType: cadvisorapiv2.TypeName, Count: 2, Recursive: false, MaxAge: &maxAge}
-	mockCadvisor.On("ContainerInfoV2", "/", options).Return(map[string]cadvisorapiv2.ContainerInfo{}, nil)
-	mockCadvisor.On("ImagesFsInfo").Return(cadvisorapiv2.FsInfo{
-		Usage:    400,
-		Capacity: 10E9,
-	}, nil)
-	mockCadvisor.On("RootFsInfo").Return(cadvisorapiv2.FsInfo{
-		Usage:    400,
-		Capacity: 20E9,
-	}, nil)
-
 	kubelet.machineInfo = machineInfo
 
 	expectedNode := &v1.Node{
@@ -868,8 +806,8 @@ func TestUpdateNodeStatusWithRuntimeStateError(t *testing.T) {
 				MachineID:               "123",
 				SystemUUID:              "abc",
 				BootID:                  "1b3",
-				KernelVersion:           "3.16.0-0.bpo.4-amd64",
-				OSImage:                 "Debian GNU/Linux 7 (wheezy)",
+				KernelVersion:           cadvisortest.FakeKernelVersion,
+				OSImage:                 cadvisortest.FakeContainerOsVersion,
 				OperatingSystem:         goruntime.GOOS,
 				Architecture:            goruntime.GOARCH,
 				ContainerRuntimeVersion: "test://1.5.0",
@@ -1051,23 +989,6 @@ func TestRegisterWithApiServer(t *testing.T) {
 		NumCores:       2,
 		MemoryCapacity: 1024,
 	}
-	mockCadvisor := testKubelet.fakeCadvisor
-	mockCadvisor.On("MachineInfo").Return(machineInfo, nil)
-	versionInfo := &cadvisorapi.VersionInfo{
-		KernelVersion:      "3.16.0-0.bpo.4-amd64",
-		ContainerOsVersion: "Debian GNU/Linux 7 (wheezy)",
-		DockerVersion:      "1.5.0",
-	}
-	mockCadvisor.On("VersionInfo").Return(versionInfo, nil)
-	mockCadvisor.On("ImagesFsInfo").Return(cadvisorapiv2.FsInfo{
-		Usage:     400,
-		Capacity:  1000,
-		Available: 600,
-	}, nil)
-	mockCadvisor.On("RootFsInfo").Return(cadvisorapiv2.FsInfo{
-		Usage:    9,
-		Capacity: 10,
-	}, nil)
 	kubelet.machineInfo = machineInfo
 
 	done := make(chan struct{})
@@ -1279,27 +1200,6 @@ func TestUpdateNewNodeStatusTooLargeReservation(t *testing.T) {
 		NumCores:       2,
 		MemoryCapacity: 10E9, // 10G
 	}
-	mockCadvisor := testKubelet.fakeCadvisor
-	mockCadvisor.On("Start").Return(nil)
-	mockCadvisor.On("MachineInfo").Return(machineInfo, nil)
-	versionInfo := &cadvisorapi.VersionInfo{
-		KernelVersion:      "3.16.0-0.bpo.4-amd64",
-		ContainerOsVersion: "Debian GNU/Linux 7 (wheezy)",
-	}
-	mockCadvisor.On("VersionInfo").Return(versionInfo, nil)
-	maxAge := 0 * time.Second
-	options := cadvisorapiv2.RequestOptions{IdType: cadvisorapiv2.TypeName, Count: 2, Recursive: false, MaxAge: &maxAge}
-	mockCadvisor.On("ContainerInfoV2", "/", options).Return(map[string]cadvisorapiv2.ContainerInfo{}, nil)
-	mockCadvisor.On("ImagesFsInfo").Return(cadvisorapiv2.FsInfo{
-		Usage:     400,
-		Capacity:  3000,
-		Available: 600,
-	}, nil)
-	mockCadvisor.On("RootFsInfo").Return(cadvisorapiv2.FsInfo{
-		Usage:     400,
-		Capacity:  3000,
-		Available: 600,
-	}, nil)
 	kubelet.machineInfo = machineInfo
 
 	expectedNode := &v1.Node{
@@ -1765,9 +1665,6 @@ func TestSetVolumeLimits(t *testing.T) {
 				Err:      nil,
 			}
 			kubelet.cloud = fakeCloud
-			kubelet.cloudproviderRequestParallelism = make(chan int, 1)
-			kubelet.cloudproviderRequestSync = make(chan int)
-			kubelet.cloudproviderRequestTimeout = 10 * time.Second
 		} else {
 			kubelet.cloud = nil
 		}

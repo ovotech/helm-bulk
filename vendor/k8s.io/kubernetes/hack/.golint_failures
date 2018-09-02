@@ -7,7 +7,9 @@ cmd/kube-proxy/app
 cmd/kube-scheduler/app
 cmd/kubeadm/app
 cmd/kubeadm/app/apis/kubeadm/v1alpha2
+cmd/kubeadm/app/apis/kubeadm/v1alpha3
 cmd/kubeadm/app/util/config
+cmd/kubeadm/app/util/system
 cmd/kubelet/app
 cmd/kubelet/app/options
 cmd/kubemark
@@ -45,6 +47,8 @@ pkg/apis/certificates/v1beta1
 pkg/apis/certificates/validation
 pkg/apis/componentconfig
 pkg/apis/componentconfig/v1alpha1
+pkg/apis/coordination
+pkg/apis/coordination/v1beta1
 pkg/apis/core
 pkg/apis/core/helper
 pkg/apis/core/helper/qos
@@ -270,6 +274,7 @@ pkg/registry/batch/rest
 pkg/registry/certificates/certificates
 pkg/registry/certificates/certificates/storage
 pkg/registry/certificates/rest
+pkg/registry/coordination/rest
 pkg/registry/core/componentstatus
 pkg/registry/core/endpoint/storage
 pkg/registry/core/event
@@ -311,7 +316,6 @@ pkg/registry/networking/rest
 pkg/registry/policy/poddisruptionbudget
 pkg/registry/policy/poddisruptionbudget/storage
 pkg/registry/policy/rest
-pkg/registry/rbac
 pkg/registry/rbac/clusterrole
 pkg/registry/rbac/clusterrole/policybased
 pkg/registry/rbac/clusterrolebinding
@@ -381,7 +385,6 @@ pkg/volume/azure_dd
 pkg/volume/azure_file
 pkg/volume/cephfs
 pkg/volume/configmap
-pkg/volume/csi
 pkg/volume/csi/fake
 pkg/volume/csi/labelmanager
 pkg/volume/empty_dir
@@ -440,6 +443,7 @@ staging/src/k8s.io/api/batch/v1
 staging/src/k8s.io/api/batch/v1beta1
 staging/src/k8s.io/api/batch/v2alpha1
 staging/src/k8s.io/api/certificates/v1beta1
+staging/src/k8s.io/api/coordination/v1beta1
 staging/src/k8s.io/api/core/v1
 staging/src/k8s.io/api/events/v1beta1
 staging/src/k8s.io/api/extensions/v1beta1
@@ -465,7 +469,6 @@ staging/src/k8s.io/apiextensions-apiserver/pkg/controller/finalizer
 staging/src/k8s.io/apiextensions-apiserver/pkg/controller/status
 staging/src/k8s.io/apiextensions-apiserver/pkg/features
 staging/src/k8s.io/apiextensions-apiserver/pkg/registry/customresourcedefinition
-staging/src/k8s.io/apiextensions-apiserver/test/integration/testserver
 staging/src/k8s.io/apimachinery/pkg/api/meta
 staging/src/k8s.io/apimachinery/pkg/api/testing/fuzzer
 staging/src/k8s.io/apimachinery/pkg/api/testing/roundtrip
@@ -714,7 +717,6 @@ test/e2e_node/environment
 test/e2e_node/remote
 test/e2e_node/runner/remote
 test/e2e_node/services
-test/e2e_node/system
 test/images/net/nat
 test/images/netexec
 test/images/nettest

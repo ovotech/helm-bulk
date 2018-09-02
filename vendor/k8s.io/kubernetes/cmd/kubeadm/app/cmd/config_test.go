@@ -26,10 +26,13 @@ import (
 
 	"github.com/renstrom/dedent"
 
-	kubeadmapiv1alpha2 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1alpha2"
+	kubeadmapiv1alpha3 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1alpha3"
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd"
 	"k8s.io/kubernetes/cmd/kubeadm/app/features"
 	"k8s.io/kubernetes/cmd/kubeadm/app/util/config"
+	utilruntime "k8s.io/kubernetes/cmd/kubeadm/app/util/runtime"
+	"k8s.io/utils/exec"
+	fakeexec "k8s.io/utils/exec/testing"
 )
 
 const (
@@ -65,8 +68,8 @@ func TestImagesListRunWithCustomConfigPath(t *testing.T) {
 				":v1.10.1",
 			},
 			configContents: []byte(dedent.Dedent(`
-				apiVersion: kubeadm.k8s.io/v1alpha2
-				kind: MasterConfiguration
+				apiVersion: kubeadm.k8s.io/v1alpha3
+				kind: InitConfiguration
 				kubernetesVersion: v1.10.1
 			`)),
 		},
@@ -77,8 +80,8 @@ func TestImagesListRunWithCustomConfigPath(t *testing.T) {
 				"coredns",
 			},
 			configContents: []byte(dedent.Dedent(`
-				apiVersion: kubeadm.k8s.io/v1alpha2
-				kind: MasterConfiguration
+				apiVersion: kubeadm.k8s.io/v1alpha3
+				kind: InitConfiguration
 				kubernetesVersion: v1.11.0
 				featureGates:
 				  CoreDNS: True
@@ -100,7 +103,7 @@ func TestImagesListRunWithCustomConfigPath(t *testing.T) {
 				t.Fatalf("Failed writing a config file: %v", err)
 			}
 
-			i, err := cmd.NewImagesList(configFilePath, &kubeadmapiv1alpha2.MasterConfiguration{
+			i, err := cmd.NewImagesList(configFilePath, &kubeadmapiv1alpha3.InitConfiguration{
 				KubernetesVersion: dummyKubernetesVersion,
 			})
 			if err != nil {
@@ -127,21 +130,21 @@ func TestImagesListRunWithCustomConfigPath(t *testing.T) {
 func TestConfigImagesListRunWithoutPath(t *testing.T) {
 	testcases := []struct {
 		name           string
-		cfg            kubeadmapiv1alpha2.MasterConfiguration
+		cfg            kubeadmapiv1alpha3.InitConfiguration
 		expectedImages int
 	}{
 		{
 			name:           "empty config",
 			expectedImages: defaultNumberOfImages,
-			cfg: kubeadmapiv1alpha2.MasterConfiguration{
+			cfg: kubeadmapiv1alpha3.InitConfiguration{
 				KubernetesVersion: dummyKubernetesVersion,
 			},
 		},
 		{
 			name: "external etcd configuration",
-			cfg: kubeadmapiv1alpha2.MasterConfiguration{
-				Etcd: kubeadmapiv1alpha2.Etcd{
-					External: &kubeadmapiv1alpha2.ExternalEtcd{
+			cfg: kubeadmapiv1alpha3.InitConfiguration{
+				Etcd: kubeadmapiv1alpha3.Etcd{
+					External: &kubeadmapiv1alpha3.ExternalEtcd{
 						Endpoints: []string{"https://some.etcd.com:2379"},
 					},
 				},
@@ -151,7 +154,7 @@ func TestConfigImagesListRunWithoutPath(t *testing.T) {
 		},
 		{
 			name: "coredns enabled",
-			cfg: kubeadmapiv1alpha2.MasterConfiguration{
+			cfg: kubeadmapiv1alpha3.InitConfiguration{
 				FeatureGates: map[string]bool{
 					features.CoreDNS: true,
 				},
@@ -181,34 +184,50 @@ func TestConfigImagesListRunWithoutPath(t *testing.T) {
 	}
 }
 
-type fakePuller struct {
-	count map[string]int
-}
-
-func (f *fakePuller) Pull(image string) error {
-	f.count[image]++
-	return nil
-}
-
 func TestImagesPull(t *testing.T) {
-	puller := &fakePuller{
-		count: make(map[string]int),
+	fcmd := fakeexec.FakeCmd{
+		RunScript: []fakeexec.FakeRunAction{
+			func() ([]byte, []byte, error) { return nil, nil, nil },
+			func() ([]byte, []byte, error) { return nil, nil, nil },
+			func() ([]byte, []byte, error) { return nil, nil, nil },
+			func() ([]byte, []byte, error) { return nil, nil, nil },
+			func() ([]byte, []byte, error) { return nil, nil, nil },
+		},
 	}
+
+	fexec := fakeexec.FakeExec{
+		CommandScript: []fakeexec.FakeCommandAction{
+			func(cmd string, args ...string) exec.Cmd { return fakeexec.InitFakeCmd(&fcmd, cmd, args...) },
+			func(cmd string, args ...string) exec.Cmd { return fakeexec.InitFakeCmd(&fcmd, cmd, args...) },
+			func(cmd string, args ...string) exec.Cmd { return fakeexec.InitFakeCmd(&fcmd, cmd, args...) },
+			func(cmd string, args ...string) exec.Cmd { return fakeexec.InitFakeCmd(&fcmd, cmd, args...) },
+			func(cmd string, args ...string) exec.Cmd { return fakeexec.InitFakeCmd(&fcmd, cmd, args...) },
+		},
+		LookPathFunc: func(cmd string) (string, error) { return "/usr/bin/docker", nil },
+	}
+
+	containerRuntime, err := utilruntime.NewContainerRuntime(&fexec, kubeadmapiv1alpha3.DefaultCRISocket)
+	if err != nil {
+		t.Errorf("unexpected NewContainerRuntime error: %v", err)
+	}
+
 	images := []string{"a", "b", "c", "d", "a"}
-	ip := cmd.NewImagesPull(puller, images)
-	err := ip.PullAll()
+	ip := cmd.NewImagesPull(containerRuntime, images)
+
+	err = ip.PullAll()
 	if err != nil {
 		t.Fatalf("expected nil but found %v", err)
 	}
-	if puller.count["a"] != 2 {
-		t.Fatalf("expected 2 but found %v", puller.count["a"])
+
+	if fcmd.RunCalls != len(images) {
+		t.Errorf("expected %d docker calls, got %d", len(images), fcmd.RunCalls)
 	}
 }
 
 func TestMigrate(t *testing.T) {
 	cfg := []byte(dedent.Dedent(`
-		apiVersion: kubeadm.k8s.io/v1alpha2
-		kind: MasterConfiguration
+		apiVersion: kubeadm.k8s.io/v1alpha3
+		kind: InitConfiguration
 		kubernetesVersion: v1.10.0
 	`))
 	configFile, cleanup := tempConfig(t, cfg)

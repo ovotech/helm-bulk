@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
    "title": "Kubernetes",
-   "version": "v1.11.2"
+   "version": "v1.12.0"
   },
   "paths": {
    "/api/": {
@@ -1279,6 +1279,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -1302,6 +1309,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -1785,6 +1798,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -1808,6 +1828,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -2291,6 +2317,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -2314,6 +2347,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -2797,6 +2836,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -2820,6 +2866,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -3303,6 +3355,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -3326,6 +3385,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -3969,6 +4034,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -3992,6 +4064,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -5781,6 +5859,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -5804,6 +5889,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -6287,6 +6378,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -6310,6 +6408,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -7113,6 +7217,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -7136,6 +7247,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -7779,6 +7896,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -7802,6 +7926,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -8285,6 +8415,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -8308,6 +8445,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -8698,6 +8841,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -8721,6 +8871,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -9624,6 +9780,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -9647,6 +9810,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -10336,6 +10505,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -10359,6 +10535,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -11590,6 +11772,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -11613,6 +11802,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -17739,6 +17934,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -17762,6 +17964,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -18478,6 +18686,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -18501,6 +18716,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -18968,6 +19189,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -18991,6 +19219,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -19956,6 +20190,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -19979,6 +20220,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -20880,6 +21127,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -20903,6 +21157,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -21771,6 +22031,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -21794,6 +22061,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -23015,6 +23288,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -23038,6 +23318,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -23521,6 +23807,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -23544,6 +23837,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -24187,6 +24486,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -24210,6 +24516,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -25013,6 +25325,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -25036,6 +25355,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -25839,6 +26164,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -25862,6 +26194,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -28794,6 +29132,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -28817,6 +29162,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -29300,6 +29651,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -29323,6 +29681,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -29443,19 +29807,19 @@
       "200": {
        "description": "OK",
        "schema": {
-        "$ref": "#/definitions/io.k8s.api.apps.v1beta1.DeploymentRollback"
+        "$ref": "#/definitions/io.k8s.api.apps.v1beta1.DeploymentStatus"
        }
       },
       "201": {
        "description": "Created",
        "schema": {
-        "$ref": "#/definitions/io.k8s.api.apps.v1beta1.DeploymentRollback"
+        "$ref": "#/definitions/io.k8s.api.apps.v1beta1.DeploymentStatus"
        }
       },
       "202": {
        "description": "Accepted",
        "schema": {
-        "$ref": "#/definitions/io.k8s.api.apps.v1beta1.DeploymentRollback"
+        "$ref": "#/definitions/io.k8s.api.apps.v1beta1.DeploymentStatus"
        }
       },
       "401": {
@@ -30210,6 +30574,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -30233,6 +30604,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -32493,6 +32870,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -32516,6 +32900,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -32999,6 +33389,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -33022,6 +33419,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -33665,6 +34068,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -33688,6 +34098,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -34491,6 +34907,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -34514,6 +34937,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -35317,6 +35746,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -35340,6 +35776,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -39095,6 +39537,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -39118,6 +39567,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -40234,6 +40689,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -40257,6 +40719,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -41406,6 +41874,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -41429,6 +41904,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -42545,6 +43026,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -42568,6 +43056,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -43684,6 +44178,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -43707,6 +44208,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -44744,6 +45251,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -44767,6 +45281,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -45252,6 +45772,1031 @@
       "type": "string",
       "description": "name of the CertificateSigningRequest",
       "name": "name",
+      "in": "path",
+      "required": true
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "If 'true', then the output is pretty printed.",
+      "name": "pretty",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.",
+      "name": "resourceVersion",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "integer",
+      "description": "Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.",
+      "name": "timeoutSeconds",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "boolean",
+      "description": "Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.",
+      "name": "watch",
+      "in": "query"
+     }
+    ]
+   },
+   "/apis/coordination.k8s.io/": {
+    "get": {
+     "description": "get information of a group",
+     "consumes": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination"
+     ],
+     "operationId": "getCoordinationAPIGroup",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.APIGroup"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     }
+    }
+   },
+   "/apis/coordination.k8s.io/v1beta1/": {
+    "get": {
+     "description": "get available resources",
+     "consumes": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "getCoordinationV1beta1APIResources",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.APIResourceList"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     }
+    }
+   },
+   "/apis/coordination.k8s.io/v1beta1/leases": {
+    "get": {
+     "description": "list or watch objects of kind Lease",
+     "consumes": [
+      "*/*"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf",
+      "application/json;stream=watch",
+      "application/vnd.kubernetes.protobuf;stream=watch"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "listCoordinationV1beta1LeaseForAllNamespaces",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.LeaseList"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "list",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "parameters": [
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
+      "name": "continue",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "A selector to restrict the list of returned objects by their fields. Defaults to everything.",
+      "name": "fieldSelector",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "boolean",
+      "description": "If true, partially initialized resources are included in the response.",
+      "name": "includeUninitialized",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "A selector to restrict the list of returned objects by their labels. Defaults to everything.",
+      "name": "labelSelector",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "integer",
+      "description": "limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.\n\nThe server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.",
+      "name": "limit",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "If 'true', then the output is pretty printed.",
+      "name": "pretty",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.",
+      "name": "resourceVersion",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "integer",
+      "description": "Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.",
+      "name": "timeoutSeconds",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "boolean",
+      "description": "Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.",
+      "name": "watch",
+      "in": "query"
+     }
+    ]
+   },
+   "/apis/coordination.k8s.io/v1beta1/namespaces/{namespace}/leases": {
+    "get": {
+     "description": "list or watch objects of kind Lease",
+     "consumes": [
+      "*/*"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf",
+      "application/json;stream=watch",
+      "application/vnd.kubernetes.protobuf;stream=watch"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "listCoordinationV1beta1NamespacedLease",
+     "parameters": [
+      {
+       "uniqueItems": true,
+       "type": "string",
+       "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
+       "name": "continue",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "string",
+       "description": "A selector to restrict the list of returned objects by their fields. Defaults to everything.",
+       "name": "fieldSelector",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "boolean",
+       "description": "If true, partially initialized resources are included in the response.",
+       "name": "includeUninitialized",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "string",
+       "description": "A selector to restrict the list of returned objects by their labels. Defaults to everything.",
+       "name": "labelSelector",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "integer",
+       "description": "limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.\n\nThe server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.",
+       "name": "limit",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "string",
+       "description": "When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.",
+       "name": "resourceVersion",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "integer",
+       "description": "Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.",
+       "name": "timeoutSeconds",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "boolean",
+       "description": "Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.",
+       "name": "watch",
+       "in": "query"
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.LeaseList"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "list",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "post": {
+     "description": "create a Lease",
+     "consumes": [
+      "*/*"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "createCoordinationV1beta1NamespacedLease",
+     "parameters": [
+      {
+       "name": "body",
+       "in": "body",
+       "required": true,
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.Lease"
+       }
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.Lease"
+       }
+      },
+      "201": {
+       "description": "Created",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.Lease"
+       }
+      },
+      "202": {
+       "description": "Accepted",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.Lease"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "post",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "delete": {
+     "description": "delete collection of Lease",
+     "consumes": [
+      "*/*"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "deleteCoordinationV1beta1CollectionNamespacedLease",
+     "parameters": [
+      {
+       "uniqueItems": true,
+       "type": "string",
+       "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
+       "name": "continue",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "string",
+       "description": "A selector to restrict the list of returned objects by their fields. Defaults to everything.",
+       "name": "fieldSelector",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "boolean",
+       "description": "If true, partially initialized resources are included in the response.",
+       "name": "includeUninitialized",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "string",
+       "description": "A selector to restrict the list of returned objects by their labels. Defaults to everything.",
+       "name": "labelSelector",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "integer",
+       "description": "limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.\n\nThe server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.",
+       "name": "limit",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "string",
+       "description": "When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.",
+       "name": "resourceVersion",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "integer",
+       "description": "Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.",
+       "name": "timeoutSeconds",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "boolean",
+       "description": "Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.",
+       "name": "watch",
+       "in": "query"
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "deletecollection",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "parameters": [
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "object name and auth scope, such as for teams and projects",
+      "name": "namespace",
+      "in": "path",
+      "required": true
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "If 'true', then the output is pretty printed.",
+      "name": "pretty",
+      "in": "query"
+     }
+    ]
+   },
+   "/apis/coordination.k8s.io/v1beta1/namespaces/{namespace}/leases/{name}": {
+    "get": {
+     "description": "read the specified Lease",
+     "consumes": [
+      "*/*"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "readCoordinationV1beta1NamespacedLease",
+     "parameters": [
+      {
+       "uniqueItems": true,
+       "type": "boolean",
+       "description": "Should the export be exact.  Exact export maintains cluster-specific fields like 'Namespace'.",
+       "name": "exact",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "boolean",
+       "description": "Should this value be exported.  Export strips fields that a user can not specify.",
+       "name": "export",
+       "in": "query"
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.Lease"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "get",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "put": {
+     "description": "replace the specified Lease",
+     "consumes": [
+      "*/*"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "replaceCoordinationV1beta1NamespacedLease",
+     "parameters": [
+      {
+       "name": "body",
+       "in": "body",
+       "required": true,
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.Lease"
+       }
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.Lease"
+       }
+      },
+      "201": {
+       "description": "Created",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.Lease"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "put",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "delete": {
+     "description": "delete a Lease",
+     "consumes": [
+      "*/*"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "deleteCoordinationV1beta1NamespacedLease",
+     "parameters": [
+      {
+       "name": "body",
+       "in": "body",
+       "required": true,
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.DeleteOptions"
+       }
+      },
+      {
+       "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "integer",
+       "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
+       "name": "gracePeriodSeconds",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "boolean",
+       "description": "Deprecated: please use the PropagationPolicy, this field will be deprecated in 1.7. Should the dependent objects be orphaned. If true/false, the \"orphan\" finalizer will be added to/removed from the object's finalizers list. Either this field or PropagationPolicy may be set, but not both.",
+       "name": "orphanDependents",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
+       "type": "string",
+       "description": "Whether and how garbage collection will be performed. Either this field or OrphanDependents may be set, but not both. The default policy is decided by the existing finalizer set in the metadata.finalizers and the resource-specific default policy. Acceptable values are: 'Orphan' - orphan the dependents; 'Background' - allow the garbage collector to delete the dependents in the background; 'Foreground' - a cascading policy that deletes all dependents in the foreground.",
+       "name": "propagationPolicy",
+       "in": "query"
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "delete",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "patch": {
+     "description": "partially update the specified Lease",
+     "consumes": [
+      "application/json-patch+json",
+      "application/merge-patch+json",
+      "application/strategic-merge-patch+json"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "patchCoordinationV1beta1NamespacedLease",
+     "parameters": [
+      {
+       "name": "body",
+       "in": "body",
+       "required": true,
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Patch"
+       }
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.Lease"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "patch",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "parameters": [
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "name of the Lease",
+      "name": "name",
+      "in": "path",
+      "required": true
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "object name and auth scope, such as for teams and projects",
+      "name": "namespace",
+      "in": "path",
+      "required": true
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "If 'true', then the output is pretty printed.",
+      "name": "pretty",
+      "in": "query"
+     }
+    ]
+   },
+   "/apis/coordination.k8s.io/v1beta1/watch/leases": {
+    "get": {
+     "description": "watch individual changes to a list of Lease",
+     "consumes": [
+      "*/*"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf",
+      "application/json;stream=watch",
+      "application/vnd.kubernetes.protobuf;stream=watch"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "watchCoordinationV1beta1LeaseListForAllNamespaces",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.WatchEvent"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "watchlist",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "parameters": [
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
+      "name": "continue",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "A selector to restrict the list of returned objects by their fields. Defaults to everything.",
+      "name": "fieldSelector",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "boolean",
+      "description": "If true, partially initialized resources are included in the response.",
+      "name": "includeUninitialized",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "A selector to restrict the list of returned objects by their labels. Defaults to everything.",
+      "name": "labelSelector",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "integer",
+      "description": "limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.\n\nThe server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.",
+      "name": "limit",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "If 'true', then the output is pretty printed.",
+      "name": "pretty",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.",
+      "name": "resourceVersion",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "integer",
+      "description": "Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.",
+      "name": "timeoutSeconds",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "boolean",
+      "description": "Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.",
+      "name": "watch",
+      "in": "query"
+     }
+    ]
+   },
+   "/apis/coordination.k8s.io/v1beta1/watch/namespaces/{namespace}/leases": {
+    "get": {
+     "description": "watch individual changes to a list of Lease",
+     "consumes": [
+      "*/*"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf",
+      "application/json;stream=watch",
+      "application/vnd.kubernetes.protobuf;stream=watch"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "watchCoordinationV1beta1NamespacedLeaseList",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.WatchEvent"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "watchlist",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "parameters": [
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
+      "name": "continue",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "A selector to restrict the list of returned objects by their fields. Defaults to everything.",
+      "name": "fieldSelector",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "boolean",
+      "description": "If true, partially initialized resources are included in the response.",
+      "name": "includeUninitialized",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "A selector to restrict the list of returned objects by their labels. Defaults to everything.",
+      "name": "labelSelector",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "integer",
+      "description": "limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.\n\nThe server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.",
+      "name": "limit",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "object name and auth scope, such as for teams and projects",
+      "name": "namespace",
+      "in": "path",
+      "required": true
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "If 'true', then the output is pretty printed.",
+      "name": "pretty",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.",
+      "name": "resourceVersion",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "integer",
+      "description": "Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.",
+      "name": "timeoutSeconds",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "boolean",
+      "description": "Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.",
+      "name": "watch",
+      "in": "query"
+     }
+    ]
+   },
+   "/apis/coordination.k8s.io/v1beta1/watch/namespaces/{namespace}/leases/{name}": {
+    "get": {
+     "description": "watch changes to an object of kind Lease",
+     "consumes": [
+      "*/*"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/vnd.kubernetes.protobuf",
+      "application/json;stream=watch",
+      "application/vnd.kubernetes.protobuf;stream=watch"
+     ],
+     "schemes": [
+      "https"
+     ],
+     "tags": [
+      "coordination_v1beta1"
+     ],
+     "operationId": "watchCoordinationV1beta1NamespacedLease",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.WatchEvent"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      }
+     },
+     "x-kubernetes-action": "watch",
+     "x-kubernetes-group-version-kind": {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    },
+    "parameters": [
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
+      "name": "continue",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "A selector to restrict the list of returned objects by their fields. Defaults to everything.",
+      "name": "fieldSelector",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "boolean",
+      "description": "If true, partially initialized resources are included in the response.",
+      "name": "includeUninitialized",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "A selector to restrict the list of returned objects by their labels. Defaults to everything.",
+      "name": "labelSelector",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "integer",
+      "description": "limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.\n\nThe server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.",
+      "name": "limit",
+      "in": "query"
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "name of the Lease",
+      "name": "name",
+      "in": "path",
+      "required": true
+     },
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "object name and auth scope, such as for teams and projects",
+      "name": "namespace",
       "in": "path",
       "required": true
      },
@@ -45850,6 +47395,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -45873,6 +47425,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -47070,6 +48628,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -47093,6 +48658,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -47736,6 +49307,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -47759,6 +49337,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -47879,19 +49463,19 @@
       "200": {
        "description": "OK",
        "schema": {
-        "$ref": "#/definitions/io.k8s.api.extensions.v1beta1.DeploymentRollback"
+        "$ref": "#/definitions/io.k8s.api.extensions.v1beta1.DeploymentStatus"
        }
       },
       "201": {
        "description": "Created",
        "schema": {
-        "$ref": "#/definitions/io.k8s.api.extensions.v1beta1.DeploymentRollback"
+        "$ref": "#/definitions/io.k8s.api.extensions.v1beta1.DeploymentStatus"
        }
       },
       "202": {
        "description": "Accepted",
        "schema": {
-        "$ref": "#/definitions/io.k8s.api.extensions.v1beta1.DeploymentRollback"
+        "$ref": "#/definitions/io.k8s.api.extensions.v1beta1.DeploymentStatus"
        }
       },
       "401": {
@@ -48646,6 +50230,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -48669,6 +50260,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -49312,6 +50909,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -49335,6 +50939,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -49818,6 +51428,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -49841,6 +51458,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -50900,6 +52523,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -50923,6 +52553,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -53464,6 +55100,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -53487,6 +55130,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -54476,6 +56125,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -54499,6 +56155,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -55238,6 +56900,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -55261,6 +56930,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -56330,6 +58005,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -56353,6 +58035,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -56804,6 +58492,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -56827,6 +58522,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -57286,6 +58987,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -57309,6 +59017,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -57776,6 +59490,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -57799,6 +59520,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -59603,6 +61330,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -59626,6 +61360,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -60077,6 +61817,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -60100,6 +61847,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -60559,6 +62312,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -60582,6 +62342,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -61049,6 +62815,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -61072,6 +62845,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -62876,6 +64655,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -62899,6 +64685,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -63350,6 +65142,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -63373,6 +65172,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -63832,6 +65637,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -63855,6 +65667,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -64322,6 +66140,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -64345,6 +66170,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -66198,6 +68029,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -66221,6 +68059,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -66937,6 +68781,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -66960,6 +68811,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -67717,6 +69574,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -67740,6 +69604,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -68721,6 +70591,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -68744,6 +70621,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -69460,6 +71343,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -69483,6 +71373,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -70199,6 +72095,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -70222,6 +72125,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -70689,6 +72598,13 @@
       },
       {
        "uniqueItems": true,
+       "type": "string",
+       "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+       "name": "dryRun",
+       "in": "query"
+      },
+      {
+       "uniqueItems": true,
        "type": "integer",
        "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
        "name": "gracePeriodSeconds",
@@ -70712,6 +72628,12 @@
      "responses": {
       "200": {
        "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "202": {
+       "description": "Accepted",
        "schema": {
         "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.Status"
        }
@@ -76208,6 +78130,95 @@
      }
     }
    },
+   "io.k8s.api.coordination.v1beta1.Lease": {
+    "description": "Lease defines a lease concept.",
+    "properties": {
+     "apiVersion": {
+      "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
+      "type": "string"
+     },
+     "kind": {
+      "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
+      "type": "string"
+     },
+     "metadata": {
+      "description": "More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
+      "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta"
+     },
+     "spec": {
+      "description": "Specification of the Lease. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-and-status",
+      "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.LeaseSpec"
+     }
+    },
+    "x-kubernetes-group-version-kind": [
+     {
+      "group": "coordination.k8s.io",
+      "kind": "Lease",
+      "version": "v1beta1"
+     }
+    ]
+   },
+   "io.k8s.api.coordination.v1beta1.LeaseList": {
+    "description": "LeaseList is a list of Lease objects.",
+    "required": [
+     "items"
+    ],
+    "properties": {
+     "apiVersion": {
+      "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
+      "type": "string"
+     },
+     "items": {
+      "description": "Items is a list of schema objects.",
+      "type": "array",
+      "items": {
+       "$ref": "#/definitions/io.k8s.api.coordination.v1beta1.Lease"
+      }
+     },
+     "kind": {
+      "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
+      "type": "string"
+     },
+     "metadata": {
+      "description": "Standard list metadata. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata",
+      "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ListMeta"
+     }
+    },
+    "x-kubernetes-group-version-kind": [
+     {
+      "group": "coordination.k8s.io",
+      "kind": "LeaseList",
+      "version": "v1beta1"
+     }
+    ]
+   },
+   "io.k8s.api.coordination.v1beta1.LeaseSpec": {
+    "description": "LeaseSpec is a specification of a Lease.",
+    "properties": {
+     "acquireTime": {
+      "description": "acquireTime is a time when the current lease was acquired.",
+      "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.MicroTime"
+     },
+     "holderIdentity": {
+      "description": "holderIdentity contains the identity of the holder of a current lease.",
+      "type": "string"
+     },
+     "leaseDurationSeconds": {
+      "description": "leaseDurationSeconds is a duration that candidates for a lease need to wait to force acquire it. This is measure against time of last observed RenewTime.",
+      "type": "integer",
+      "format": "int32"
+     },
+     "leaseTransitions": {
+      "description": "leaseTransitions is the number of transitions of a lease between holders.",
+      "type": "integer",
+      "format": "int32"
+     },
+     "renewTime": {
+      "description": "renewTime is a time when the current holder of a lease has last updated the lease.",
+      "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.MicroTime"
+     }
+    }
+   },
    "io.k8s.api.core.v1.AWSElasticBlockStoreVolumeSource": {
     "description": "Represents a Persistent Disk resource in AWS.\n\nAn AWS EBS disk must exist before mounting to a container. The disk must also be in the same AWS zone as the kubelet. An AWS EBS disk can only be mounted as read/write once. AWS EBS volumes support ownership management and SELinux relabeling.",
     "required": [
@@ -80219,7 +82230,7 @@
     ],
     "properties": {
      "fsType": {
-      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified.",
+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Default is \"xfs\"",
       "type": "string"
      },
      "gateway": {
@@ -80243,7 +82254,7 @@
       "type": "boolean"
      },
      "storageMode": {
-      "description": "Indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned.",
+      "description": "Indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.",
       "type": "string"
      },
      "storagePool": {
@@ -80269,7 +82280,7 @@
     ],
     "properties": {
      "fsType": {
-      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified.",
+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Default is \"xfs\".",
       "type": "string"
      },
      "gateway": {
@@ -80293,7 +82304,7 @@
       "type": "boolean"
      },
      "storageMode": {
-      "description": "Indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned.",
+      "description": "Indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned.",
       "type": "string"
      },
      "storagePool": {
@@ -85768,7 +87779,7 @@
     "description": "JSONSchemaPropsOrStringArray represents a JSONSchemaProps or a string array."
    },
    "io.k8s.apimachinery.pkg.api.resource.Quantity": {
-    "description": "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and Int64() accessors.\n\nThe serialization format is:\n\n\u003cquantity\u003e        ::= \u003csignedNumber\u003e\u003csuffix\u003e\n  (Note that \u003csuffix\u003e may be empty, from the \"\" case in \u003cdecimalSI\u003e.)\n\u003cdigit\u003e           ::= 0 | 1 | ... | 9 \u003cdigits\u003e          ::= \u003cdigit\u003e | \u003cdigit\u003e\u003cdigits\u003e \u003cnumber\u003e          ::= \u003cdigits\u003e | \u003cdigits\u003e.\u003cdigits\u003e | \u003cdigits\u003e. | .\u003cdigits\u003e \u003csign\u003e            ::= \"+\" | \"-\" \u003csignedNumber\u003e    ::= \u003cnumber\u003e | \u003csign\u003e\u003cnumber\u003e \u003csuffix\u003e          ::= \u003cbinarySI\u003e | \u003cdecimalExponent\u003e | \u003cdecimalSI\u003e \u003cbinarySI\u003e        ::= Ki | Mi | Gi | Ti | Pi | Ei\n  (International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\u003cdecimalSI\u003e       ::= m | \"\" | k | M | G | T | P | E\n  (Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\u003cdecimalExponent\u003e ::= \"e\" \u003csignedNumber\u003e | \"E\" \u003csignedNumber\u003e\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n  a. No precision is lost\n  b. No fractional digits will be emitted\n  c. The exponent (or suffix) is as large as possible.\nThe sign will be omitted unless the number is negative.\n\nExamples:\n  1.5 will be serialized as \"1500m\"\n  1.5Gi will be serialized as \"1536Mi\"\n\nNOTE: We reserve the right to amend this canonical format, perhaps to\n  allow 1.5 to be canonical.\n  or after March 2015.\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation.",
+    "description": "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and Int64() accessors.\n\nThe serialization format is:\n\n\u003cquantity\u003e        ::= \u003csignedNumber\u003e\u003csuffix\u003e\n  (Note that \u003csuffix\u003e may be empty, from the \"\" case in \u003cdecimalSI\u003e.)\n\u003cdigit\u003e           ::= 0 | 1 | ... | 9 \u003cdigits\u003e          ::= \u003cdigit\u003e | \u003cdigit\u003e\u003cdigits\u003e \u003cnumber\u003e          ::= \u003cdigits\u003e | \u003cdigits\u003e.\u003cdigits\u003e | \u003cdigits\u003e. | .\u003cdigits\u003e \u003csign\u003e            ::= \"+\" | \"-\" \u003csignedNumber\u003e    ::= \u003cnumber\u003e | \u003csign\u003e\u003cnumber\u003e \u003csuffix\u003e          ::= \u003cbinarySI\u003e | \u003cdecimalExponent\u003e | \u003cdecimalSI\u003e \u003cbinarySI\u003e        ::= Ki | Mi | Gi | Ti | Pi | Ei\n  (International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\u003cdecimalSI\u003e       ::= m | \"\" | k | M | G | T | P | E\n  (Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\u003cdecimalExponent\u003e ::= \"e\" \u003csignedNumber\u003e | \"E\" \u003csignedNumber\u003e\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n  a. No precision is lost\n  b. No fractional digits will be emitted\n  c. The exponent (or suffix) is as large as possible.\nThe sign will be omitted unless the number is negative.\n\nExamples:\n  1.5 will be serialized as \"1500m\"\n  1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation.",
     "type": "string"
    },
    "io.k8s.apimachinery.pkg.apis.meta.v1.APIGroup": {
@@ -85984,6 +87995,13 @@
       "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
       "type": "string"
      },
+     "dryRun": {
+      "description": "When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in a BadRequest response and no further processing of the request.",
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
      "gracePeriodSeconds": {
       "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
       "type": "integer",
@@ -86104,6 +88122,11 @@
      },
      {
       "group": "certificates.k8s.io",
+      "kind": "DeleteOptions",
+      "version": "v1beta1"
+     },
+     {
+      "group": "coordination.k8s.io",
       "kind": "DeleteOptions",
       "version": "v1beta1"
      },
@@ -86659,6 +88682,11 @@
      },
      {
       "group": "certificates.k8s.io",
+      "kind": "WatchEvent",
+      "version": "v1beta1"
+     },
+     {
+      "group": "coordination.k8s.io",
       "kind": "WatchEvent",
       "version": "v1beta1"
      },

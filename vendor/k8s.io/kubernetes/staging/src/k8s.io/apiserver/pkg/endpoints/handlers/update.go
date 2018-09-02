@@ -20,13 +20,17 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"k8s.io/apimachinery/pkg/api/errors"
+	metainternalversion "k8s.io/apimachinery/pkg/apis/meta/internalversion"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apiserver/pkg/admission"
 	"k8s.io/apiserver/pkg/audit"
+	"k8s.io/apiserver/pkg/authorization/authorizer"
 	"k8s.io/apiserver/pkg/endpoints/handlers/negotiation"
 	"k8s.io/apiserver/pkg/endpoints/request"
 	"k8s.io/apiserver/pkg/registry/rest"
@@ -58,6 +62,13 @@ func UpdateResource(r rest.Updater, scope RequestScope, admit admission.Interfac
 
 		body, err := readBody(req)
 		if err != nil {
+			scope.err(err, w, req)
+			return
+		}
+
+		options := &metav1.UpdateOptions{}
+		if err := metainternalversion.ParameterCodec.DecodeParameters(req.URL.Query(), scope.MetaGroupVersion, options); err != nil {
+			err = errors.NewBadRequest(err.Error())
 			scope.err(err, w, req)
 			return
 		}
@@ -102,6 +113,19 @@ func UpdateResource(r rest.Updater, scope RequestScope, admit admission.Interfac
 			})
 		}
 
+		createAuthorizerAttributes := authorizer.AttributesRecord{
+			User:            userInfo,
+			ResourceRequest: true,
+			Path:            req.URL.Path,
+			Verb:            "create",
+			APIGroup:        scope.Resource.Group,
+			APIVersion:      scope.Resource.Version,
+			Resource:        scope.Resource.Resource,
+			Subresource:     scope.Subresource,
+			Namespace:       namespace,
+			Name:            name,
+		}
+
 		trace.Step("About to store object in database")
 		wasCreated := false
 		result, err := finishRequest(timeout, func() (runtime.Object, error) {
@@ -109,8 +133,10 @@ func UpdateResource(r rest.Updater, scope RequestScope, admit admission.Interfac
 				ctx,
 				name,
 				rest.DefaultUpdatedObjectInfo(obj, transformers...),
-				rest.AdmissionToValidateObjectFunc(admit, staticAdmissionAttributes),
+				withAuthorization(rest.AdmissionToValidateObjectFunc(admit, staticAdmissionAttributes), scope.Authorizer, createAuthorizerAttributes),
 				rest.AdmissionToValidateObjectUpdateFunc(admit, staticAdmissionAttributes),
+				false,
+				options,
 			)
 			wasCreated = created
 			return obj, err
@@ -138,5 +164,37 @@ func UpdateResource(r rest.Updater, scope RequestScope, admit admission.Interfac
 		}
 
 		transformResponseObject(ctx, scope, req, w, status, result)
+	}
+}
+
+func withAuthorization(validate rest.ValidateObjectFunc, a authorizer.Authorizer, attributes authorizer.Attributes) rest.ValidateObjectFunc {
+	var once sync.Once
+	var authorizerDecision authorizer.Decision
+	var authorizerReason string
+	var authorizerErr error
+	return func(obj runtime.Object) error {
+		if a == nil {
+			return errors.NewInternalError(fmt.Errorf("no authorizer provided, unable to authorize a create on update"))
+		}
+		once.Do(func() {
+			authorizerDecision, authorizerReason, authorizerErr = a.Authorize(attributes)
+		})
+		// an authorizer like RBAC could encounter evaluation errors and still allow the request, so authorizer decision is checked before error here.
+		if authorizerDecision == authorizer.DecisionAllow {
+			// Continue to validating admission
+			return validate(obj)
+		}
+		if authorizerErr != nil {
+			return errors.NewInternalError(authorizerErr)
+		}
+
+		// The user is not authorized to perform this action, so we need to build the error response
+		gr := schema.GroupResource{
+			Group:    attributes.GetAPIGroup(),
+			Resource: attributes.GetResource(),
+		}
+		name := attributes.GetName()
+		err := fmt.Errorf("%v", authorizerReason)
+		return errors.NewForbidden(gr, name, err)
 	}
 }

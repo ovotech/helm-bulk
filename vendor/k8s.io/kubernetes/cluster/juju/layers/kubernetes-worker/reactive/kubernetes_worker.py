@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import hashlib
 import json
 import os
 import random
@@ -36,7 +37,7 @@ from charms.reactive import when, when_any, when_not, when_none
 
 from charms.kubernetes.common import get_version
 
-from charms.reactive.helpers import data_changed, any_file_changed
+from charms.reactive.helpers import data_changed
 from charms.templating.jinja2 import render
 
 from charmhelpers.core import hookenv, unitdata
@@ -52,6 +53,7 @@ kubeconfig_path = '/root/cdk/kubeconfig'
 kubeproxyconfig_path = '/root/cdk/kubeproxyconfig'
 kubeclientconfig_path = '/root/.kube/config'
 gcp_creds_env_key = 'GOOGLE_APPLICATION_CREDENTIALS'
+snap_resources = ['kubectl', 'kubelet', 'kube-proxy']
 
 os.environ['PATH'] += os.pathsep + os.path.join(os.sep, 'snap', 'bin')
 db = unitdata.kv()
@@ -64,6 +66,7 @@ def upgrade_charm():
     hookenv.atexit(remove_state, 'config.changed.install_from_upstream')
 
     cleanup_pre_snap_services()
+    migrate_resource_checksums()
     check_resources_for_upgrade_needed()
 
     # Remove the RC for nginx ingress if it exists
@@ -88,12 +91,56 @@ def upgrade_charm():
     set_state('kubernetes-worker.restart-needed')
 
 
+def get_resource_checksum_db_key(resource):
+    ''' Convert a resource name to a resource checksum database key. '''
+    return 'kubernetes-worker.resource-checksums.' + resource
+
+
+def calculate_resource_checksum(resource):
+    ''' Calculate a checksum for a resource '''
+    md5 = hashlib.md5()
+    path = hookenv.resource_get(resource)
+    if path:
+        with open(path, 'rb') as f:
+            data = f.read()
+        md5.update(data)
+    return md5.hexdigest()
+
+
+def migrate_resource_checksums():
+    ''' Migrate resource checksums from the old schema to the new one '''
+    for resource in snap_resources:
+        new_key = get_resource_checksum_db_key(resource)
+        if not db.get(new_key):
+            path = hookenv.resource_get(resource)
+            if path:
+                # old key from charms.reactive.helpers.any_file_changed
+                old_key = 'reactive.files_changed.' + path
+                old_checksum = db.get(old_key)
+                db.set(new_key, old_checksum)
+            else:
+                # No resource is attached. Previously, this meant no checksum
+                # would be calculated and stored. But now we calculate it as if
+                # it is a 0-byte resource, so let's go ahead and do that.
+                zero_checksum = hashlib.md5().hexdigest()
+                db.set(new_key, zero_checksum)
+
+
 def check_resources_for_upgrade_needed():
     hookenv.status_set('maintenance', 'Checking resources')
-    resources = ['kubectl', 'kubelet', 'kube-proxy']
-    paths = [hookenv.resource_get(resource) for resource in resources]
-    if any_file_changed(paths):
-        set_upgrade_needed()
+    for resource in snap_resources:
+        key = get_resource_checksum_db_key(resource)
+        old_checksum = db.get(key)
+        new_checksum = calculate_resource_checksum(resource)
+        if new_checksum != old_checksum:
+            set_upgrade_needed()
+
+
+def calculate_and_store_resource_checksums():
+    for resource in snap_resources:
+        key = get_resource_checksum_db_key(resource)
+        checksum = calculate_resource_checksum(resource)
+        db.set(key, checksum)
 
 
 def set_upgrade_needed():
@@ -151,7 +198,6 @@ def upgrade_needed_status():
 
 @when('kubernetes-worker.snaps.upgrade-specified')
 def install_snaps():
-    check_resources_for_upgrade_needed()
     channel = hookenv.config('channel')
     hookenv.status_set('maintenance', 'Installing kubectl snap')
     snap.install('kubectl', channel=channel, classic=True)
@@ -159,6 +205,7 @@ def install_snaps():
     snap.install('kubelet', channel=channel, classic=True)
     hookenv.status_set('maintenance', 'Installing kube-proxy snap')
     snap.install('kube-proxy', channel=channel, classic=True)
+    calculate_and_store_resource_checksums()
     set_state('kubernetes-worker.snaps.installed')
     set_state('kubernetes-worker.restart-needed')
     remove_state('kubernetes-worker.snaps.upgrade-needed')
@@ -173,7 +220,7 @@ def shutdown():
     '''
     try:
         if os.path.isfile(kubeconfig_path):
-            kubectl('delete', 'node', gethostname().lower())
+            kubectl('delete', 'node', get_node_name())
     except CalledProcessError:
         hookenv.log('Failed to unregister node.')
     service_stop('snap.kubelet.daemon')
@@ -403,8 +450,8 @@ def sdn_changed():
 @when('kubernetes-worker.config.created')
 @when_not('kubernetes-worker.ingress.available')
 def render_and_launch_ingress():
-    ''' If configuration has ingress daemon set enabled, launch the ingress load
-    balancer and default http backend. Otherwise attempt deletion. '''
+    ''' If configuration has ingress daemon set enabled, launch the ingress
+    load balancer and default http backend. Otherwise attempt deletion. '''
     config = hookenv.config()
     # If ingress is enabled, launch the ingress controller
     if config.get('ingress'):
@@ -632,6 +679,10 @@ def configure_kubelet(dns, ingress_ip):
         cloud_config_path = _cloud_config_path('kubelet')
         kubelet_opts['cloud-provider'] = 'gce'
         kubelet_opts['cloud-config'] = str(cloud_config_path)
+    elif is_state('endpoint.openstack.ready'):
+        cloud_config_path = _cloud_config_path('kubelet')
+        kubelet_opts['cloud-provider'] = 'openstack'
+        kubelet_opts['cloud-config'] = str(cloud_config_path)
 
     configure_kubernetes_service('kubelet', kubelet_opts, 'kubelet-extra-args')
 
@@ -696,6 +747,7 @@ def create_kubeconfig(kubeconfig, server, ca, key=None, certificate=None,
 
 
 @when_any('config.changed.default-backend-image',
+          'config.changed.ingress-ssl-chain-completion',
           'config.changed.nginx-image')
 @when('kubernetes-worker.config.created')
 def launch_default_ingress_controller():
@@ -738,17 +790,16 @@ def launch_default_ingress_controller():
         return
 
     # Render the ingress daemon set controller manifest
+    context['ssl_chain_completion'] = config.get(
+        'ingress-ssl-chain-completion')
     context['ingress_image'] = config.get('nginx-image')
     if context['ingress_image'] == "" or context['ingress_image'] == "auto":
-        if context['arch'] == 's390x':
-            context['ingress_image'] = \
-                "docker.io/cdkbot/nginx-ingress-controller-s390x:0.9.0-beta.13"
-        elif context['arch'] == 'arm64':
-            context['ingress_image'] = \
-                "k8s.gcr.io/nginx-ingress-controller-arm64:0.9.0-beta.15"
-        else:
-            context['ingress_image'] = \
-                "k8s.gcr.io/nginx-ingress-controller:0.9.0-beta.15"  # noqa
+        images = {'amd64': 'quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.16.1', # noqa
+                  'arm64': 'quay.io/kubernetes-ingress-controller/nginx-ingress-controller-arm64:0.16.1', # noqa
+                  's390x': 'quay.io/kubernetes-ingress-controller/nginx-ingress-controller-s390x:0.16.1', # noqa
+                  'ppc64el': 'quay.io/kubernetes-ingress-controller/nginx-ingress-controller-ppc64le:0.16.1', # noqa
+                  }
+        context['ingress_image'] = images.get(context['arch'], images['amd64'])
     if get_version('kubelet') < (1, 9):
         context['daemonset_api_version'] = 'extensions/v1beta1'
     else:
@@ -1008,10 +1059,20 @@ def missing_kube_control():
     missing.
 
     """
-    hookenv.status_set(
-        'blocked',
-        'Relate {}:kube-control kubernetes-master:kube-control'.format(
-            hookenv.service_name()))
+    try:
+        goal_state = hookenv.goal_state()
+    except NotImplementedError:
+        goal_state = {}
+
+    if 'kube-control' in goal_state.get('relations', {}):
+        hookenv.status_set(
+            'waiting',
+            'Waiting for kubernetes-master to become ready')
+    else:
+        hookenv.status_set(
+            'blocked',
+            'Relate {}:kube-control kubernetes-master:kube-control'.format(
+                hookenv.service_name()))
 
 
 @when('docker.ready')
@@ -1040,11 +1101,13 @@ def get_node_name():
     if is_state('endpoint.aws.ready'):
         cloud_provider = 'aws'
     elif is_state('endpoint.gcp.ready'):
-        cloud_provider = 'gcp'
+        cloud_provider = 'gce'
+    elif is_state('endpoint.openstack.ready'):
+        cloud_provider = 'openstack'
     if cloud_provider == 'aws':
-        return getfqdn()
+        return getfqdn().lower()
     else:
-        return gethostname()
+        return gethostname().lower()
 
 
 class ApplyNodeLabelFailed(Exception):
@@ -1122,11 +1185,14 @@ def clear_requested_integration():
 
 
 @when_any('endpoint.aws.ready',
-          'endpoint.gcp.ready')
+          'endpoint.gcp.ready',
+          'endpoint.openstack.ready')
 @when_not('kubernetes-worker.restarted-for-cloud')
 def restart_for_cloud():
     if is_state('endpoint.gcp.ready'):
         _write_gcp_snap_config('kubelet')
+    elif is_state('endpoint.openstack.ready'):
+        _write_openstack_snap_config('kubelet')
     set_state('kubernetes-worker.restarted-for-cloud')
     set_state('kubernetes-worker.restart-needed')
 
@@ -1174,6 +1240,21 @@ def _write_gcp_snap_config(component):
         daemon_env += '{}={}\n'.format(gcp_creds_env_key, creds_path)
         daemon_env_path.parent.mkdir(parents=True, exist_ok=True)
         daemon_env_path.write_text(daemon_env)
+
+
+def _write_openstack_snap_config(component):
+    # openstack requires additional credentials setup
+    openstack = endpoint_from_flag('endpoint.openstack.ready')
+
+    cloud_config_path = _cloud_config_path(component)
+    cloud_config_path.write_text('\n'.join([
+        '[Global]',
+        'auth-url = {}'.format(openstack.auth_url),
+        'username = {}'.format(openstack.username),
+        'password = {}'.format(openstack.password),
+        'tenant-name = {}'.format(openstack.project_name),
+        'domain-name = {}'.format(openstack.user_domain_name),
+    ]))
 
 
 def get_first_mount(mount_relation):

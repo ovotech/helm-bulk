@@ -26,7 +26,7 @@ import (
 
 	clientset "k8s.io/client-go/kubernetes"
 	kubeadmapi "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm"
-	kubeadmapiv1alpha2 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1alpha2"
+	kubeadmapiv1alpha3 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1alpha3"
 	"k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/validation"
 	cmdutil "k8s.io/kubernetes/cmd/kubeadm/app/cmd/util"
 	"k8s.io/kubernetes/cmd/kubeadm/app/constants"
@@ -42,8 +42,6 @@ import (
 )
 
 const (
-	upgradeManifestTimeout = 5 * time.Minute
-
 	defaultImagePullTimeout = 15 * time.Minute
 )
 
@@ -72,7 +70,7 @@ func NewCmdApply(apf *applyPlanFlags) *cobra.Command {
 		applyPlanFlags:   apf,
 		imagePullTimeout: defaultImagePullTimeout,
 		etcdUpgrade:      true,
-		criSocket:        kubeadmapiv1alpha2.DefaultCRISocket,
+		criSocket:        kubeadmapiv1alpha3.DefaultCRISocket,
 	}
 
 	cmd := &cobra.Command{
@@ -91,8 +89,8 @@ func NewCmdApply(apf *applyPlanFlags) *cobra.Command {
 
 			// If the version is specified in config file, pick up that value.
 			if flags.cfgPath != "" {
-				glog.V(1).Infof("fetching configuration from file", flags.cfgPath)
-				cfg, err := configutil.ConfigFileAndDefaultsToInternalConfig(flags.cfgPath, &kubeadmapiv1alpha2.MasterConfiguration{})
+				glog.V(1).Infof("fetching configuration from file %s", flags.cfgPath)
+				cfg, err := configutil.ConfigFileAndDefaultsToInternalConfig(flags.cfgPath, &kubeadmapiv1alpha3.InitConfiguration{})
 				kubeadmutil.CheckErr(err)
 
 				if cfg.KubernetesVersion != "" {
@@ -195,7 +193,9 @@ func RunApply(flags *applyFlags) error {
 	// and block until all DaemonSets are ready; then we know for sure that all control plane images are cached locally
 	glog.V(1).Infof("[upgrade/apply] creating prepuller")
 	prepuller := upgrade.NewDaemonSetPrepuller(upgradeVars.client, upgradeVars.waiter, upgradeVars.cfg)
-	upgrade.PrepullImagesInParallel(prepuller, flags.imagePullTimeout)
+	if err := upgrade.PrepullImagesInParallel(prepuller, flags.imagePullTimeout); err != nil {
+		return fmt.Errorf("[upgrade/prepull] Failed prepulled the images for the control plane components error: %v", err)
+	}
 
 	// Now; perform the upgrade procedure
 	glog.V(1).Infof("[upgrade/apply] performing upgrade")
@@ -261,7 +261,7 @@ func EnforceVersionPolicies(flags *applyFlags, versionGetter upgrade.VersionGett
 }
 
 // PerformControlPlaneUpgrade actually performs the upgrade procedure for the cluster of your type (self-hosted or static-pod-hosted)
-func PerformControlPlaneUpgrade(flags *applyFlags, client clientset.Interface, waiter apiclient.Waiter, internalcfg *kubeadmapi.MasterConfiguration) error {
+func PerformControlPlaneUpgrade(flags *applyFlags, client clientset.Interface, waiter apiclient.Waiter, internalcfg *kubeadmapi.InitConfiguration) error {
 
 	// Check if the cluster is self-hosted and act accordingly
 	glog.V(1).Infoln("checking if cluster is self-hosted")
@@ -269,7 +269,7 @@ func PerformControlPlaneUpgrade(flags *applyFlags, client clientset.Interface, w
 		fmt.Printf("[upgrade/apply] Upgrading your Self-Hosted control plane to version %q...\n", flags.newK8sVersionStr)
 
 		// Upgrade the self-hosted cluster
-		glog.V(1).Infoln("[upgrade/apply] ugrading self-hosted cluster")
+		glog.V(1).Infoln("[upgrade/apply] upgrading self-hosted cluster")
 		return upgrade.SelfHostedControlPlane(client, waiter, internalcfg, flags.newK8sVersion)
 	}
 
@@ -284,14 +284,14 @@ func PerformControlPlaneUpgrade(flags *applyFlags, client clientset.Interface, w
 	return PerformStaticPodUpgrade(client, waiter, internalcfg, flags.etcdUpgrade)
 }
 
-// GetPathManagerForUpgrade returns a path manager properly configured for the given MasterConfiguration.
-func GetPathManagerForUpgrade(internalcfg *kubeadmapi.MasterConfiguration, etcdUpgrade bool) (upgrade.StaticPodPathManager, error) {
+// GetPathManagerForUpgrade returns a path manager properly configured for the given InitConfiguration.
+func GetPathManagerForUpgrade(internalcfg *kubeadmapi.InitConfiguration, etcdUpgrade bool) (upgrade.StaticPodPathManager, error) {
 	isHAEtcd := etcdutil.CheckConfigurationIsHA(&internalcfg.Etcd)
 	return upgrade.NewKubeStaticPodPathManagerUsingTempDirs(constants.GetStaticPodDirectory(), true, etcdUpgrade && !isHAEtcd)
 }
 
 // PerformStaticPodUpgrade performs the upgrade of the control plane components for a static pod hosted cluster
-func PerformStaticPodUpgrade(client clientset.Interface, waiter apiclient.Waiter, internalcfg *kubeadmapi.MasterConfiguration, etcdUpgrade bool) error {
+func PerformStaticPodUpgrade(client clientset.Interface, waiter apiclient.Waiter, internalcfg *kubeadmapi.InitConfiguration, etcdUpgrade bool) error {
 	pathManager, err := GetPathManagerForUpgrade(internalcfg, etcdUpgrade)
 	if err != nil {
 		return err
@@ -302,7 +302,7 @@ func PerformStaticPodUpgrade(client clientset.Interface, waiter apiclient.Waiter
 }
 
 // DryRunStaticPodUpgrade fakes an upgrade of the control plane
-func DryRunStaticPodUpgrade(internalcfg *kubeadmapi.MasterConfiguration) error {
+func DryRunStaticPodUpgrade(internalcfg *kubeadmapi.InitConfiguration) error {
 
 	dryRunManifestDir, err := constants.CreateTempDirForKubeadm("kubeadm-upgrade-dryrun")
 	if err != nil {

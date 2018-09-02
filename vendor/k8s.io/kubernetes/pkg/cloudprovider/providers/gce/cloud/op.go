@@ -25,7 +25,6 @@ import (
 	alpha "google.golang.org/api/compute/v0.alpha"
 	beta "google.golang.org/api/compute/v0.beta"
 	ga "google.golang.org/api/compute/v1"
-	"google.golang.org/api/googleapi"
 
 	"k8s.io/kubernetes/pkg/cloudprovider/providers/gce/cloud/meta"
 )
@@ -86,7 +85,7 @@ func (o *gaOperation) isDone(ctx context.Context) (bool, error) {
 
 	if op.Error != nil && len(op.Error.Errors) > 0 && op.Error.Errors[0] != nil {
 		e := op.Error.Errors[0]
-		o.err = &googleapi.Error{Code: int(op.HttpErrorStatusCode), Message: fmt.Sprintf("%v - %v", e.Code, e.Message)}
+		o.err = &GCEOperationError{HTTPStatusCode: op.HTTPStatusCode, Code: e.Code, Message: e.Message}
 	}
 	return true, nil
 }
@@ -143,7 +142,7 @@ func (o *alphaOperation) isDone(ctx context.Context) (bool, error) {
 
 	if op.Error != nil && len(op.Error.Errors) > 0 && op.Error.Errors[0] != nil {
 		e := op.Error.Errors[0]
-		o.err = &googleapi.Error{Code: int(op.HttpErrorStatusCode), Message: fmt.Sprintf("%v - %v", e.Code, e.Message)}
+		o.err = &GCEOperationError{HTTPStatusCode: op.HTTPStatusCode, Code: e.Code, Message: e.Message}
 	}
 	return true, nil
 }
@@ -200,7 +199,7 @@ func (o *betaOperation) isDone(ctx context.Context) (bool, error) {
 
 	if op.Error != nil && len(op.Error.Errors) > 0 && op.Error.Errors[0] != nil {
 		e := op.Error.Errors[0]
-		o.err = &googleapi.Error{Code: int(op.HttpErrorStatusCode), Message: fmt.Sprintf("%v - %v", e.Code, e.Message)}
+		o.err = &GCEOperationError{HTTPStatusCode: op.HTTPStatusCode, Code: e.Code, Message: e.Message}
 	}
 	return true, nil
 }

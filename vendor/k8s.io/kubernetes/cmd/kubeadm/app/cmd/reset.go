@@ -30,11 +30,12 @@ import (
 	"github.com/spf13/cobra"
 
 	"k8s.io/apimachinery/pkg/util/sets"
-	kubeadmapiv1alpha2 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1alpha2"
+	kubeadmapiv1alpha3 "k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1alpha3"
 	"k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/validation"
 	kubeadmconstants "k8s.io/kubernetes/cmd/kubeadm/app/constants"
 	"k8s.io/kubernetes/cmd/kubeadm/app/preflight"
 	kubeadmutil "k8s.io/kubernetes/cmd/kubeadm/app/util"
+	utilruntime "k8s.io/kubernetes/cmd/kubeadm/app/util/runtime"
 	"k8s.io/kubernetes/pkg/util/initsystem"
 	utilsexec "k8s.io/utils/exec"
 )
@@ -71,12 +72,12 @@ func NewCmdReset(in io.Reader, out io.Writer) *cobra.Command {
 	cmd.PersistentFlags().MarkDeprecated("skip-preflight-checks", "it is now equivalent to --ignore-preflight-errors=all")
 
 	cmd.PersistentFlags().StringVar(
-		&certsDir, "cert-dir", kubeadmapiv1alpha2.DefaultCertificatesDir,
+		&certsDir, "cert-dir", kubeadmapiv1alpha3.DefaultCertificatesDir,
 		"The path to the directory where the certificates are stored. If specified, clean this directory.",
 	)
 
 	cmd.PersistentFlags().StringVar(
-		&criSocketPath, "cri-socket", "/var/run/dockershim.sock",
+		&criSocketPath, "cri-socket", kubeadmapiv1alpha3.DefaultCRISocket,
 		"The path to the CRI socket to use with crictl when cleaning up containers.",
 	)
 
@@ -147,12 +148,10 @@ func (r *Reset) Run(out io.Writer) error {
 		glog.Errorf("[reset] failed to unmount mounted directories in /var/lib/kubelet: %s\n", string(umountOutputBytes))
 	}
 
-	fmt.Println("[reset] removing kubernetes-managed containers")
-	dockerCheck := preflight.ServiceCheck{Service: "docker", CheckIfActive: true}
-	execer := utilsexec.New()
-
-	reset(execer, dockerCheck, r.criSocketPath)
-
+	glog.V(1).Info("[reset] removing kubernetes-managed containers")
+	if err := removeContainers(utilsexec.New(), r.criSocketPath); err != nil {
+		glog.Errorf("[reset] failed to remove containers: %+v", err)
+	}
 	dirsToClean := []string{"/var/lib/kubelet", "/etc/cni/net.d", "/var/lib/dockershim", "/var/run/kubernetes"}
 
 	// Only clear etcd data when the etcd manifest is found. In case it is not found, we must assume that the user
@@ -164,6 +163,7 @@ func (r *Reset) Run(out io.Writer) error {
 		dirsToClean = append(dirsToClean, "/var/lib/etcd")
 	} else {
 		fmt.Printf("[reset] no etcd manifest found in %q. Assuming external etcd\n", etcdManifestPath)
+		fmt.Println("[reset] please manually reset etcd to prevent further issues")
 	}
 
 	// Then clean contents from the stateful kubelet, etcd and cni directories
@@ -175,7 +175,7 @@ func (r *Reset) Run(out io.Writer) error {
 
 	// Remove contents from the config and pki directories
 	glog.V(1).Infoln("[reset] removing contents from the config and pki directories")
-	if r.certsDir != kubeadmapiv1alpha2.DefaultCertificatesDir {
+	if r.certsDir != kubeadmapiv1alpha3.DefaultCertificatesDir {
 		glog.Warningf("[reset] WARNING: cleaning a non-default certificates directory: %q\n", r.certsDir)
 	}
 	resetConfigDir(kubeadmconstants.KubernetesDir, r.certsDir)
@@ -183,63 +183,19 @@ func (r *Reset) Run(out io.Writer) error {
 	return nil
 }
 
-func reset(execer utilsexec.Interface, dockerCheck preflight.Checker, criSocketPath string) {
-	crictlPath, err := execer.LookPath("crictl")
-	if err == nil {
-		resetWithCrictl(execer, dockerCheck, criSocketPath, crictlPath)
-	} else {
-		resetWithDocker(execer, dockerCheck)
+func removeContainers(execer utilsexec.Interface, criSocketPath string) error {
+	containerRuntime, err := utilruntime.NewContainerRuntime(execer, criSocketPath)
+	if err != nil {
+		return err
 	}
-}
-
-func resetWithDocker(execer utilsexec.Interface, dockerCheck preflight.Checker) {
-	if _, errors := dockerCheck.Check(); len(errors) == 0 {
-		if err := execer.Command("sh", "-c", "docker ps -a --filter name=k8s_ -q | xargs -r docker rm --force --volumes").Run(); err != nil {
-			glog.Errorln("[reset] failed to stop the running containers")
-		}
-	} else {
-		fmt.Println("[reset] docker doesn't seem to be running. Skipping the removal of running Kubernetes containers")
+	containers, err := containerRuntime.ListKubeContainers()
+	if err != nil {
+		return err
 	}
-}
-
-func resetWithCrictl(execer utilsexec.Interface, dockerCheck preflight.Checker, criSocketPath, crictlPath string) {
-	if criSocketPath != "" {
-		fmt.Printf("[reset] cleaning up running containers using crictl with socket %s\n", criSocketPath)
-		glog.V(1).Infoln("[reset] listing running pods using crictl")
-
-		params := []string{"-r", criSocketPath, "pods", "--quiet"}
-		glog.V(1).Infof("[reset] Executing command %s %s", crictlPath, strings.Join(params, " "))
-		output, err := execer.Command(crictlPath, params...).CombinedOutput()
-		if err != nil {
-			fmt.Printf("[reset] failed to list running pods using crictl: %v. Trying to use docker instead", err)
-			resetWithDocker(execer, dockerCheck)
-			return
-		}
-		sandboxes := strings.Fields(string(output))
-		glog.V(1).Infoln("[reset] Stopping and removing running containers using crictl")
-		for _, s := range sandboxes {
-			if strings.TrimSpace(s) == "" {
-				continue
-			}
-			params = []string{"-r", criSocketPath, "stopp", s}
-			glog.V(1).Infof("[reset] Executing command %s %s", crictlPath, strings.Join(params, " "))
-			if err := execer.Command(crictlPath, params...).Run(); err != nil {
-				fmt.Printf("[reset] failed to stop the running containers using crictl: %v. Trying to use docker instead", err)
-				resetWithDocker(execer, dockerCheck)
-				return
-			}
-			params = []string{"-r", criSocketPath, "rmp", s}
-			glog.V(1).Infof("[reset] Executing command %s %s", crictlPath, strings.Join(params, " "))
-			if err := execer.Command(crictlPath, params...).Run(); err != nil {
-				fmt.Printf("[reset] failed to remove the running containers using crictl: %v. Trying to use docker instead", err)
-				resetWithDocker(execer, dockerCheck)
-				return
-			}
-		}
-	} else {
-		fmt.Println("[reset] CRI socket path not provided for crictl. Trying to use docker instead")
-		resetWithDocker(execer, dockerCheck)
+	if err := containerRuntime.RemoveContainers(containers); err != nil {
+		return err
 	}
+	return nil
 }
 
 // cleanDir removes everything in a directory, but not the directory itself

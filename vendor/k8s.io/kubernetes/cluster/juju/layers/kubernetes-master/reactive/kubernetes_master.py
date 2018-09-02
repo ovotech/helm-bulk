@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import base64
+import hashlib
 import os
 import re
 import random
@@ -64,8 +65,11 @@ from charmhelpers.contrib.charmsupport import nrpe
 nrpe.Check.shortname_re = '[\.A-Za-z0-9-_]+$'
 
 gcp_creds_env_key = 'GOOGLE_APPLICATION_CREDENTIALS'
+snap_resources = ['kubectl', 'kube-apiserver', 'kube-controller-manager',
+                  'kube-scheduler', 'cdk-addons']
 
 os.environ['PATH'] += os.pathsep + os.path.join(os.sep, 'snap', 'bin')
+db = unitdata.kv()
 
 
 def set_upgrade_needed(forced=False):
@@ -86,7 +90,6 @@ def channel_changed():
 
 def service_cidr():
     ''' Return the charm's service-cidr config '''
-    db = unitdata.kv()
     frozen_cidr = db.get('kubernetes-master.service-cidr')
     return frozen_cidr or hookenv.config('service-cidr')
 
@@ -94,7 +97,6 @@ def service_cidr():
 def freeze_service_cidr():
     ''' Freeze the service CIDR. Once the apiserver has started, we can no
     longer safely change this value. '''
-    db = unitdata.kv()
     db.set('kubernetes-master.service-cidr', service_cidr())
 
 
@@ -107,16 +109,17 @@ def check_for_upgrade_needed():
     add_rbac_roles()
     set_state('reconfigure.authentication.setup')
     remove_state('authentication.setup')
-    changed = snap_resources_changed()
-    if changed == 'yes':
-        set_upgrade_needed()
-    elif changed == 'unknown':
+
+    if not db.get('snap.resources.fingerprint.initialised'):
         # We are here on an upgrade from non-rolling master
         # Since this upgrade might also include resource updates eg
         # juju upgrade-charm kubernetes-master --resource kube-any=my.snap
         # we take no risk and forcibly upgrade the snaps.
         # Forcibly means we do not prompt the user to call the upgrade action.
         set_upgrade_needed(forced=True)
+
+    migrate_resource_checksums()
+    check_resources_for_upgrade_needed()
 
     # Set the auto storage backend to etcd2.
     auto_storage_backend = leader_get('auto_storage_backend')
@@ -125,27 +128,56 @@ def check_for_upgrade_needed():
         leader_set(auto_storage_backend='etcd2')
 
 
-def snap_resources_changed():
-    '''
-    Check if the snapped resources have changed. The first time this method is
-    called will report "unknown".
+def get_resource_checksum_db_key(resource):
+    ''' Convert a resource name to a resource checksum database key. '''
+    return 'kubernetes-master.resource-checksums.' + resource
 
-    Returns: "yes" in case a snap resource file has changed,
-             "no" in case a snap resources are the same as last call,
-             "unknown" if it is the first time this method is called
 
-    '''
-    db = unitdata.kv()
-    resources = ['kubectl', 'kube-apiserver', 'kube-controller-manager',
-                 'kube-scheduler', 'cdk-addons']
-    paths = [hookenv.resource_get(resource) for resource in resources]
-    if db.get('snap.resources.fingerprint.initialised'):
-        result = 'yes' if any_file_changed(paths) else 'no'
-        return result
-    else:
-        db.set('snap.resources.fingerprint.initialised', True)
-        any_file_changed(paths)
-        return 'unknown'
+def calculate_resource_checksum(resource):
+    ''' Calculate a checksum for a resource '''
+    md5 = hashlib.md5()
+    path = hookenv.resource_get(resource)
+    if path:
+        with open(path, 'rb') as f:
+            data = f.read()
+        md5.update(data)
+    return md5.hexdigest()
+
+
+def migrate_resource_checksums():
+    ''' Migrate resource checksums from the old schema to the new one '''
+    for resource in snap_resources:
+        new_key = get_resource_checksum_db_key(resource)
+        if not db.get(new_key):
+            path = hookenv.resource_get(resource)
+            if path:
+                # old key from charms.reactive.helpers.any_file_changed
+                old_key = 'reactive.files_changed.' + path
+                old_checksum = db.get(old_key)
+                db.set(new_key, old_checksum)
+            else:
+                # No resource is attached. Previously, this meant no checksum
+                # would be calculated and stored. But now we calculate it as if
+                # it is a 0-byte resource, so let's go ahead and do that.
+                zero_checksum = hashlib.md5().hexdigest()
+                db.set(new_key, zero_checksum)
+
+
+def check_resources_for_upgrade_needed():
+    hookenv.status_set('maintenance', 'Checking resources')
+    for resource in snap_resources:
+        key = get_resource_checksum_db_key(resource)
+        old_checksum = db.get(key)
+        new_checksum = calculate_resource_checksum(resource)
+        if new_checksum != old_checksum:
+            set_upgrade_needed()
+
+
+def calculate_and_store_resource_checksums():
+    for resource in snap_resources:
+        key = get_resource_checksum_db_key(resource)
+        checksum = calculate_resource_checksum(resource)
+        db.set(key, checksum)
 
 
 def add_rbac_roles():
@@ -253,7 +285,8 @@ def install_snaps():
     snap.install('kube-scheduler', channel=channel)
     hookenv.status_set('maintenance', 'Installing cdk-addons snap')
     snap.install('cdk-addons', channel=channel)
-    snap_resources_changed()
+    calculate_and_store_resource_checksums()
+    db.set('snap.resources.fingerprint.initialised', True)
     set_state('kubernetes-master.snaps.installed')
     remove_state('kubernetes-master.components.started')
 
@@ -396,12 +429,25 @@ def set_app_version():
 @hookenv.atexit
 def set_final_status():
     ''' Set the final status of the charm as we leave hook execution '''
+    try:
+        goal_state = hookenv.goal_state()
+    except NotImplementedError:
+        goal_state = {}
+
     if not is_state('kube-api-endpoint.available'):
-        hookenv.status_set('blocked', 'Waiting for kube-api-endpoint relation')
+        if 'kube-api-endpoint' in goal_state.get('relations', {}):
+            status = 'waiting'
+        else:
+            status = 'blocked'
+        hookenv.status_set(status, 'Waiting for kube-api-endpoint relation')
         return
 
     if not is_state('kube-control.connected'):
-        hookenv.status_set('blocked', 'Waiting for workers.')
+        if 'kube-control' in goal_state.get('relations', {}):
+            status = 'waiting'
+        else:
+            status = 'blocked'
+        hookenv.status_set(status, 'Waiting for workers.')
         return
 
     upgrade_needed = is_state('kubernetes-master.upgrade-needed')
@@ -432,9 +478,13 @@ def set_final_status():
         return
 
     req_sent = is_state('kubernetes-master.cloud-request-sent')
+    openstack_joined = is_state('endpoint.openstack.joined')
+    cloud_req = req_sent or openstack_joined
     aws_ready = is_state('endpoint.aws.ready')
     gcp_ready = is_state('endpoint.gcp.ready')
-    if req_sent and not (aws_ready or gcp_ready):
+    openstack_ready = is_state('endpoint.openstack.ready')
+    cloud_ready = aws_ready or gcp_ready or openstack_ready
+    if cloud_req and not cloud_ready:
         hookenv.status_set('waiting', 'waiting for cloud integration')
 
     if addons_configured and not all_kube_system_pods_running():
@@ -491,7 +541,7 @@ def start_master(etcd):
     handle_etcd_relation(etcd)
 
     # Add CLI options to all components
-    configure_apiserver(etcd.get_connection_string(), getStorageBackend())
+    configure_apiserver(etcd.get_connection_string())
     configure_controller_manager()
     configure_scheduler()
     set_state('kubernetes-master.components.started')
@@ -669,6 +719,7 @@ def configure_cdk_addons():
     gpuEnable = (get_version('kube-apiserver') >= (1, 9) and
                  load_gpu_plugin == "auto" and
                  is_state('kubernetes-master.gpu.enabled'))
+    registry = hookenv.config('addons-registry')
     dbEnabled = str(hookenv.config('enable-dashboard-addons')).lower()
     dnsEnabled = str(hookenv.config('enable-kube-dns')).lower()
     metricsEnabled = str(hookenv.config('enable-metrics')).lower()
@@ -676,6 +727,7 @@ def configure_cdk_addons():
         'arch=' + arch(),
         'dns-ip=' + get_deprecated_dns_ip(),
         'dns-domain=' + hookenv.config('dns_domain'),
+        'registry=' + registry,
         'enable-dashboard=' + dbEnabled,
         'enable-kube-dns=' + dnsEnabled,
         'enable-metrics=' + metricsEnabled,
@@ -888,13 +940,14 @@ def on_config_allow_privileged_change():
     remove_state('config.changed.allow-privileged')
 
 
-@when('config.changed.api-extra-args')
+@when_any('config.changed.api-extra-args',
+          'config.changed.audit-policy',
+          'config.changed.audit-webhook-config')
 @when('kubernetes-master.components.started')
 @when('leadership.set.auto_storage_backend')
 @when('etcd.available')
-def on_config_api_extra_args_change(etcd):
-    configure_apiserver(etcd.get_connection_string(),
-                        getStorageBackend())
+def reconfigure_apiserver(etcd):
+    configure_apiserver(etcd.get_connection_string())
 
 
 @when('config.changed.controller-manager-extra-args')
@@ -1105,8 +1158,6 @@ def parse_extra_args(config_key):
 
 
 def configure_kubernetes_service(service, base_args, extra_args_key):
-    db = unitdata.kv()
-
     prev_args_key = 'kubernetes-master.prev_args.' + service
     prev_args = db.get(prev_args_key) or {}
 
@@ -1128,7 +1179,20 @@ def configure_kubernetes_service(service, base_args, extra_args_key):
     db.set(prev_args_key, args)
 
 
-def configure_apiserver(etcd_connection_string, leader_etcd_version):
+def remove_if_exists(path):
+    try:
+        os.remove(path)
+    except FileNotFoundError:
+        pass
+
+
+def write_audit_config_file(path, contents):
+    with open(path, 'w') as f:
+        header = '# Autogenerated by kubernetes-master charm'
+        f.write(header + '\n' + contents)
+
+
+def configure_apiserver(etcd_connection_string):
     api_opts = {}
 
     # Get the tls paths from the layer data.
@@ -1166,8 +1230,9 @@ def configure_apiserver(etcd_connection_string, leader_etcd_version):
     api_opts['logtostderr'] = 'true'
     api_opts['insecure-bind-address'] = '127.0.0.1'
     api_opts['insecure-port'] = '8080'
-    api_opts['storage-backend'] = leader_etcd_version
+    api_opts['storage-backend'] = getStorageBackend()
     api_opts['basic-auth-file'] = '/root/cdk/basic_auth.csv'
+
     api_opts['token-auth-file'] = '/root/cdk/known_tokens.csv'
     api_opts['service-account-key-file'] = '/root/cdk/serviceaccount.key'
     api_opts['kubelet-preferred-address-types'] = \
@@ -1185,7 +1250,6 @@ def configure_apiserver(etcd_connection_string, leader_etcd_version):
     api_opts['etcd-servers'] = etcd_connection_string
 
     admission_control_pre_1_9 = [
-        'Initializers',
         'NamespaceLifecycle',
         'LimitRanger',
         'ServiceAccount',
@@ -1215,9 +1279,6 @@ def configure_apiserver(etcd_connection_string, leader_etcd_version):
     if kube_version < (1, 6):
         hookenv.log('Removing DefaultTolerationSeconds from admission-control')
         admission_control_pre_1_9.remove('DefaultTolerationSeconds')
-    if kube_version < (1, 7):
-        hookenv.log('Removing Initializers from admission-control')
-        admission_control_pre_1_9.remove('Initializers')
     if kube_version < (1, 9):
         api_opts['admission-control'] = ','.join(admission_control_pre_1_9)
     else:
@@ -1241,6 +1302,35 @@ def configure_apiserver(etcd_connection_string, leader_etcd_version):
         cloud_config_path = _cloud_config_path('kube-apiserver')
         api_opts['cloud-provider'] = 'gce'
         api_opts['cloud-config'] = str(cloud_config_path)
+    elif is_state('endpoint.openstack.ready'):
+        cloud_config_path = _cloud_config_path('kube-apiserver')
+        api_opts['cloud-provider'] = 'openstack'
+        api_opts['cloud-config'] = str(cloud_config_path)
+
+    audit_root = '/root/cdk/audit'
+    os.makedirs(audit_root, exist_ok=True)
+
+    audit_log_path = audit_root + '/audit.log'
+    api_opts['audit-log-path'] = audit_log_path
+    api_opts['audit-log-maxsize'] = '100'
+    api_opts['audit-log-maxbackup'] = '9'
+
+    audit_policy_path = audit_root + '/audit-policy.yaml'
+    audit_policy = hookenv.config('audit-policy')
+    if audit_policy:
+        write_audit_config_file(audit_policy_path, audit_policy)
+        api_opts['audit-policy-file'] = audit_policy_path
+    else:
+        remove_if_exists(audit_policy_path)
+
+    audit_webhook_config_path = audit_root + '/audit-webhook-config.yaml'
+    audit_webhook_config = hookenv.config('audit-webhook-config')
+    if audit_webhook_config:
+        write_audit_config_file(audit_webhook_config_path,
+                                audit_webhook_config)
+        api_opts['audit-webhook-config-file'] = audit_webhook_config_path
+    else:
+        remove_if_exists(audit_webhook_config_path)
 
     configure_kubernetes_service('kube-apiserver', api_opts, 'api-extra-args')
     restart_apiserver()
@@ -1268,6 +1358,10 @@ def configure_controller_manager():
     elif is_state('endpoint.gcp.ready'):
         cloud_config_path = _cloud_config_path('kube-controller-manager')
         controller_opts['cloud-provider'] = 'gce'
+        controller_opts['cloud-config'] = str(cloud_config_path)
+    elif is_state('endpoint.openstack.ready'):
+        cloud_config_path = _cloud_config_path('kube-controller-manager')
+        controller_opts['cloud-provider'] = 'openstack'
         controller_opts['cloud-config'] = str(cloud_config_path)
 
     configure_kubernetes_service('kube-controller-manager', controller_opts,
@@ -1347,7 +1441,6 @@ def set_token(password, save_salt):
 
     param: password - the password to be stored
     param: save_salt - the key to store the value of the token.'''
-    db = unitdata.kv()
     db.set(save_salt, password)
     return db.get(save_salt)
 
@@ -1539,12 +1632,16 @@ def clear_requested_integration():
 
 
 @when_any('endpoint.aws.ready',
-          'endpoint.gcp.ready')
+          'endpoint.gcp.ready',
+          'endpoint.openstack.ready')
 @when_not('kubernetes-master.restarted-for-cloud')
 def restart_for_cloud():
     if is_state('endpoint.gcp.ready'):
         _write_gcp_snap_config('kube-apiserver')
         _write_gcp_snap_config('kube-controller-manager')
+    elif is_state('endpoint.openstack.ready'):
+        _write_openstack_snap_config('kube-apiserver')
+        _write_openstack_snap_config('kube-controller-manager')
     set_state('kubernetes-master.restarted-for-cloud')
     remove_state('kubernetes-master.components.started')  # force restart
 
@@ -1592,3 +1689,18 @@ def _write_gcp_snap_config(component):
         daemon_env += '{}={}\n'.format(gcp_creds_env_key, creds_path)
         daemon_env_path.parent.mkdir(parents=True, exist_ok=True)
         daemon_env_path.write_text(daemon_env)
+
+
+def _write_openstack_snap_config(component):
+    # openstack requires additional credentials setup
+    openstack = endpoint_from_flag('endpoint.openstack.ready')
+
+    cloud_config_path = _cloud_config_path(component)
+    cloud_config_path.write_text('\n'.join([
+        '[Global]',
+        'auth-url = {}'.format(openstack.auth_url),
+        'username = {}'.format(openstack.username),
+        'password = {}'.format(openstack.password),
+        'tenant-name = {}'.format(openstack.project_name),
+        'domain-name = {}'.format(openstack.user_domain_name),
+    ]))

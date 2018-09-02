@@ -7,7 +7,9 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 rules:
 - apiGroups:
-  - "*"
+  - ""
+  - "apps"
+  - "extensions"
   resources:
   - "*"
   verbs:
