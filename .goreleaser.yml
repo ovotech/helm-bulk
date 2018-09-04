@@ -1,5 +1,9 @@
 archive:
   format: tar.gz
+  replacements:
+    amd64: x86_64
+    darwin: Darwin
+    linux: Linux
 builds:
   - main: ./
     goos:
