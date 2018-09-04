@@ -50,9 +50,6 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize()
-	rootCmd.PersistentFlags().BoolVarP(&local, "local", "l", false, "Run in local mode"+
-		" (needs k8s port forwarding, e.g. kubectl port-forward"+
-		" <name_of_tiller_pod> 44134:44134 -n kube-system)")
 	rootCmd.PersistentFlags().StringVarP(&fileName, "filename", "f",
 		"helm-releases.txt", "Filename to use with a Load or Save command")
 }

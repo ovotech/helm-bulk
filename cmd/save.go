@@ -53,7 +53,7 @@ func init() {
 //save obtains a slice of deployed releases, base64 encodes each release, adds
 //the base64 string to a buffer, which it then writes to file.
 func save() {
-	client := utils.Client(local)
+	client := utils.Client()
 	var statusFilter = helm.ReleaseListStatuses([]release.Status_Code{
 		release.Status_DEPLOYED,
 	})

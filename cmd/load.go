@@ -42,7 +42,7 @@ var (
 	 and 'Helm install' those Releases with the same Chart and Values.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			log.Println("helm-bulk load called")
-			client := utils.Client(local)
+			client := utils.Client()
 			if dryRun {
 				log.Println("*** operating in dry-run mode ***")
 			}
