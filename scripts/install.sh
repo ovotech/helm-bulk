@@ -3,7 +3,7 @@
 version="$(cat plugin.yaml | grep "version" | cut -d '"' -f 2)"
 # cd $HELM_PLUGIN_DIR
 # version="$(cat plugin.yaml | grep "version" | cut -d '"' -f 2)"
-# echo "Installing helm-gcs ${version} ..."
+# echo "Installing helm-bulk ${version} ..."
 #
 # # Find correct archive name
 # unameOut="$(uname -s)"
@@ -17,7 +17,7 @@ version="$(cat plugin.yaml | grep "version" | cut -d '"' -f 2)"
 # esac
 #
 # arch=`uname -m`
-# url="https://github.com/nouney/helm-gcs/releases/download/${version}/helm-gcs_${version}_${os}_${arch}.tar.gz"
+# url="https://github.com/ovotech/helm-bulk/releases/download/${version}/helm-bulk_${version}_${os}_${arch}.tar.gz"
 #
 # if [ "$url" = "" ]
 # then

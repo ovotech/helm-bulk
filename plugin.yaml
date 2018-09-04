@@ -1,10 +1,10 @@
 name: "bulk"
-version: "0.0.1"
-usage: "Load or Save Helm Releases
+version: "0.0.8"
+usage: "Load or Save Helm Releases"
 description: |-
   Load or Save Helm Releases from File to Cluster, or Cluster to File, respectively
-command: "$HELM_PLUGIN_DIR/bin/helm-bulk"
+command: "$HOME/go/src/github.com/ovotech/helm-bulk/helm-bulk"
 
 hooks:
-  install: "cd $HELM_PLUGIN_DIR; ./scripts/install.sh"
-  update: "cd $HELM_PLUGIN_DIR; ./scripts/install.sh"
+  install: "$HOME/go/src/github.com/ovotech/helm-bulk/scripts/install.sh"
+  update: "$HOME/go/src/github.com/ovotech/helm-bulk/scripts/install.sh"
