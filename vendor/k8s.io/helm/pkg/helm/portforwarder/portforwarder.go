@@ -35,6 +35,8 @@ var (
 
 // New creates a new and initialized tunnel.
 func New(namespace string, client kubernetes.Interface, config *rest.Config) (*kube.Tunnel, error) {
+	fmt.Println(client)
+	client.CoreV1()
 	podName, err := GetTillerPodName(client.CoreV1(), namespace)
 	if err != nil {
 		return nil, err
