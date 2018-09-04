@@ -1,5 +1,5 @@
 archive:
-  format: binary
+  format: tar.gz
 builds:
   - main: ./
     goos:
