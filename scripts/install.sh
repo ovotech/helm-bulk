@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version="$(cat plugin.yaml | grep "version" | cut -d '"' -f 2)"
+# version="$(cat plugin.yaml | grep "version" | cut -d '"' -f 2)"
 # cd $HELM_PLUGIN_DIR
 # version="$(cat plugin.yaml | grep "version" | cut -d '"' -f 2)"
 # echo "Installing helm-bulk ${version} ..."
