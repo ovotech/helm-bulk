@@ -54,28 +54,15 @@ Try invoking it:
 $ helm bulk
 
 Load or Save Releases from File to Cluster, or Cluster to File, respectively
-
-Usage:
-  helm-bulk [command]
-
-Available Commands:
-  help        Help about any command
-  load        Load Releases from File to Cluster
-  save        Save Releases from Cluster to File
-  show        Show Releases currently stored in the file
-
-Flags:
-  -f, --filename string   Filename to use with a Load or Save command (default "helm-releases.txt")
-  -h, --help              help for helm-bulk
-
-Use "helm-bulk [command] --help" for more information about a command.
+...
+...
 ```
 
 ## Getting Started
 
 `helm-bulk` will only ever use your current kubectl context, so make sure
 you've switched to whatever Context/Cluster you want to use (e.g. `kubectl
-  config use-context <context_name` or `gcloud container clusters....` to
+  config use-context <context_name>` or `gcloud container clusters....` to
   re-auth into your target Cluster).
 
 If end-to-end testing, try following these commands through in order, otherwise
@@ -85,11 +72,11 @@ they can be run individually:
 # Use Helm to list your Releases
 $ helm ls
 
-# Save deployed Helm Releases to file (defaults to "./helm-releases.txt")
+# Save deployed Helm Releases to archive (defaults to "./helm-releases.tar.gz")
 $ helm bulk save
 
-# Print out a list of Helm Releases currently stored in the File
-# (defaults to "./helm-releases.txt")
+# Print out a list of Helm Releases currently stored in the archive
+# (defaults to "./helm-releases.tar.gz")
 $ helm bulk show
 
 ###############################################################################

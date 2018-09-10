@@ -5,5 +5,5 @@ coverage.txt
 goreleaser
 debug.test
 helm-bulk*
-helm-releases.txt
+helm-releases*
 checksum.txt

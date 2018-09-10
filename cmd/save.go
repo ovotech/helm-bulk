@@ -27,7 +27,9 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 
+	"github.com/mholt/archiver"
 	"github.com/ovotech/helm-bulk/utils"
 	"github.com/spf13/cobra"
 	"k8s.io/helm/pkg/helm"
@@ -60,24 +62,21 @@ func save() {
 	releaseResp, err := client.ListReleases(statusFilter)
 	utils.PanicCheck(err)
 	var buffer bytes.Buffer
-	for i, release := range releaseResp.GetReleases() {
+	releases := releaseResp.GetReleases()
+	for i, release := range releases {
 		if i > 0 {
 			buffer.WriteString(",")
 		}
-		sEnc, err := utils.EncodeRelease(release)
-		utils.PanicCheck(err)
+		sEnc, errb := utils.EncodeRelease(release)
+		utils.PanicCheck(errb)
 		buffer.WriteString(sEnc)
 	}
-	utils.PanicCheck(ioutil.WriteFile(fileName, buffer.Bytes(),
+	utils.PanicCheck(ioutil.WriteFile(textFilename(), buffer.Bytes(),
 		os.FileMode.Perm(0644)))
-	log.Println("Wrote Helm Releases to file: ./" + fileName)
-	md5Hash := md5Hash(buffer.String())
-	checksumFilename := "checksum.txt"
-	utils.PanicCheck(ioutil.WriteFile(checksumFilename, []byte(md5Hash),
-		os.FileMode.Perm(0644)))
-	log.Println("Wrote Release file md5 hash to file (" + checksumFilename +
-		"), md5Hash: " + md5Hash)
-
+	utils.PanicCheck(archiver.TarGz.Make(archiveFilename(),
+		[]string{textFilename()}))
+	log.Println("Wrote " + strconv.Itoa(len(releases)) + " Helm Releases to file")
+	os.Remove(textFilename())
 }
 
 //md5Hash returns a byte slice representing the md5 hash of the provided string

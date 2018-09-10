@@ -24,8 +24,10 @@ import (
 	"bytes"
 	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 
+	"github.com/mholt/archiver"
 	"github.com/ovotech/helm-bulk/utils"
 	"github.com/spf13/cobra"
 	"k8s.io/helm/pkg/helm"
@@ -66,7 +68,6 @@ var (
 	}
 	dryRun           bool
 	nonAuthoritative bool
-	fileName         string
 )
 
 func init() {
@@ -104,13 +105,17 @@ func logReleases(releases []*release.Release, header string) {
 
 //Releases decodes the Release file and returns a slice of Releases
 func Releases() (releases []*release.Release) {
-	dat, err := ioutil.ReadFile(fileName)
+	wd, err := os.Getwd()
+	utils.PanicCheck(err)
+	utils.PanicCheck(archiver.TarGz.Open(archiveFilename(), wd))
+	dat, err := ioutil.ReadFile(textFilename())
 	utils.PanicCheck(err)
 	for _, splitString := range strings.Split(string(dat), ",") {
 		release, err := utils.DecodeRelease(splitString)
 		utils.PanicCheck(err)
 		releases = append(releases, release)
 	}
+	os.Remove(textFilename())
 	return
 }
 
