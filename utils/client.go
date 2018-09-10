@@ -40,7 +40,7 @@ func Client() (client *helm.Client) {
 	pf, err := portforwarder.New("kube-system", kclient, config)
 	PanicCheck(err)
 	log.Println("Starting Helm client")
-	tillerHost := fmt.Sprintf("localhost:%d", pf.Local)
+	tillerHost := fmt.Sprintf("127.0.0.1:%d", pf.Local)
 	client = helm.NewClient(helm.Host(tillerHost))
 	log.Println("Checking Helm client connection")
 	_, errb := client.GetVersion()
