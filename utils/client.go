@@ -36,6 +36,7 @@ import (
 func Client() (client *helm.Client) {
 	config, kclient, err := getKubeClient("", "")
 	PanicCheck(err)
+	log.Println("Portforwarding from Kubernetes Tiller pod")
 	pf, err := portforwarder.New("kube-system", kclient, config)
 	PanicCheck(err)
 	log.Println("Starting Helm client")
