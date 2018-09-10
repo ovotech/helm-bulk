@@ -62,7 +62,7 @@ Load or Save Releases from File to Cluster, or Cluster to File, respectively
 
 `helm-bulk` will only ever use your current kubectl context, so make sure
 you've switched to whatever Context/Cluster you want to use (e.g. `kubectl
-  config use-context <context_name` or `gcloud container clusters....` to
+  config use-context <context_name>` or `gcloud container clusters....` to
   re-auth into your target Cluster).
 
 If end-to-end testing, try following these commands through in order, otherwise
