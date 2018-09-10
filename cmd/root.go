@@ -31,6 +31,7 @@ import (
 
 var cfgFile string
 var local bool
+var filePrefix string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -50,8 +51,8 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize()
-	rootCmd.PersistentFlags().StringVarP(&fileName, "filename", "f",
-		"helm-releases.txt", "Filename to use with a Load or Save command")
+	rootCmd.PersistentFlags().StringVarP(&filePrefix, "fileprefix", "f",
+		"helm-releases", "File prefix to use with a Load or Save command")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -78,4 +79,16 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+// textFilename returns the text filename
+func textFilename() (filename string) {
+	filename = filePrefix + ".txt"
+	return
+}
+
+// archiveFilename returns the archive filename
+func archiveFilename() (filename string) {
+	filename = filePrefix + ".tar.gz"
+	return
 }
