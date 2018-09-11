@@ -7,3 +7,4 @@ debug.test
 helm-bulk*
 helm-releases*
 checksum.txt
+.DS_Store
