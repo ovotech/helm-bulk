@@ -1,7 +1,10 @@
+defaults: &defaults
+  working_directory: /go/src/github.com/ovotech/helm-bulk
+
 version: 2
 jobs:
   goreleaser:
-    working_directory: /go/src/github.com/ovotech/helm-bulk
+    <<: *defaults
 
     docker:
       - image: circleci/golang:1.10
@@ -14,11 +17,72 @@ jobs:
            command: |
              export GITHUB_TOKEN=$GITHUB
              curl -sL https://git.io/goreleaser | bash
-    filters:
-      tags:
-        only: /v[0-9]+(\.[0-9]+)*(-.*)*/
-      branches:
-        ignore: /.*/
+
+  go_fmt:
+    <<: *defaults
+
+    docker:
+      - image: eversc/go-pr-checks
+
+    steps:
+      - checkout
+
+      - run:
+           name: ensure gofmt
+           command: |
+             test -z $(gofmt -s -l $(find . -iname '*.go' -type f | grep -v /vendor/))
+
+  go_vet:
+    working_directory: /go/src/github.com/ovotech/helm-bulk
+
+    docker:
+      - image: eversc/go-pr-checks
+
+    steps:
+      - checkout
+
+      - run:
+           name: go vet
+           command: go vet ./...
+
+  go_cyclo:
+    <<: *defaults
+
+    docker:
+      - image: eversc/go-pr-checks
+
+    steps:
+      - checkout
+
+      - run:
+           name: go_cyclo
+           command: gocyclo -over 6 cmd utils
+
+  go_lint:
+    working_directory: /go/src/github.com/ovotech/helm-bulk
+
+    docker:
+      - image: eversc/go-pr-checks
+
+    steps:
+      - checkout
+
+      - run:
+           name: golint
+           command: golint -set_exit_status $(go list ./...)
+
+  go_build:
+    working_directory: /go/src/github.com/ovotech/helm-bulk
+
+    docker:
+      - image: eversc/go-pr-checks
+
+    steps:
+      - checkout
+
+      - run:
+           name: go build
+           command: go build
 
 workflows:
   version: 2
@@ -30,3 +94,25 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*(-.*)*/
             branches:
               ignore: /.*/
+  pr_pipeline:
+    jobs:
+      - go_fmt:
+          filters:
+            branches:
+              ignore: master
+      - go_vet:
+          filters:
+            branches:
+              ignore: master
+      - go_cyclo:
+          filters:
+            branches:
+              ignore: master
+      - go_lint:
+          filters:
+            branches:
+              ignore: master
+      - go_build:
+          filters:
+            branches:
+              ignore: master
