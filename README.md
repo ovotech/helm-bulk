@@ -1,7 +1,5 @@
 # Helm-Bulk
 
-[![CircleCI](https://circleci.com/gh/ovotech/helm-bulk/tree/master.svg?style=svg&circle-token=0171f4a6c05ad17bc42cd34d04bef0b9df026dbb)](https://circleci.com/gh/ovotech/helm-bulk/tree/master)
-
 This is a Helm plugin that loads or saves Helm releases from File to Cluster,
 or Cluster to File, respectively.
 
@@ -108,11 +106,11 @@ By default, `helm-bulk` will delete the existing Releases. If you want it to upg
 
 ## Release Naming
 
-When you install a Helm Chart, if you don't provide a name, Helm will generate one for you, e.g. "kissing-wildebeest". Subsequent `helm upgrade` commands
-will create new Releases with different names. **All** of these Releases will then be returned when running `helm ls`, and therefore will also make it into your File after a `helm bulk save`.
+When you install a Helm Chart, if you don't provide a name, Helm will generate one for you, e.g. "kissing-wildebeest". Subsequent `helm install` commands
+will create new Releases with different names (even if for the same Chart). **All** of these Releases will then be returned when running `helm ls`, and therefore will also make it into your File after a `helm bulk save`.
 
 This would lead to greater processing times when running a `helm bulk load` or
-`helm bulk save`, and a larger persisted File.
+`helm bulk save`, and a larger persisted File, and could lead to unexpected `load` results.
 
 To prevent this, it's recommended to always name your Release when installing,
 so you only have one current Release (and any upgrades to that will supersede,
