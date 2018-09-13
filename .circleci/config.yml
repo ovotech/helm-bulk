@@ -33,7 +33,7 @@ jobs:
              test -z $(gofmt -s -l $(find . -iname '*.go' -type f | grep -v /vendor/))
 
   go_vet:
-    working_directory: /go/src/github.com/ovotech/helm-bulk
+    <<: *defaults
 
     docker:
       - image: eversc/go-pr-checks
@@ -59,7 +59,7 @@ jobs:
            command: gocyclo -over 6 cmd utils
 
   go_lint:
-    working_directory: /go/src/github.com/ovotech/helm-bulk
+    <<: *defaults
 
     docker:
       - image: eversc/go-pr-checks
@@ -72,7 +72,7 @@ jobs:
            command: golint -set_exit_status $(go list ./...)
 
   go_build:
-    working_directory: /go/src/github.com/ovotech/helm-bulk
+    <<: *defaults
 
     docker:
       - image: eversc/go-pr-checks
