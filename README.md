@@ -97,22 +97,21 @@ $ helm ls
 
 If you already have one or more of the Releases in your File installed in your
 Cluster, then things get a little more complicated than working with an 'empty'
-Cluster. `helm-bulk` needs to work out whether to delete the existing Releases,
-or upgrade them.
+Cluster. `helm-bulk` needs to work out whether to ignore, delete or upgrade the existing Releases.
 
-By default, `helm-bulk` will delete the existing Releases. If you want it to upgrade them instead, then use the `-n,--non-authoritative` flag.
+By default, `helm-bulk` will ignore the existing Releases. If you want it to delete or upgrade, use the `-d` or `-u` flags respectively.
 
 `helm-bulk` is designed to be used shortly after Cluster create (obviously post tiller install), in which case there won't be any existing Helm Releases.
 
 ## Release Naming
 
-When you install a Helm Chart, if you don't provide a name, Helm will generate one for you, e.g. "kissing-wildebeest". Subsequent `helm install` commands
+When you install a Helm Chart, if you don't provide a name, Helm will generate one for you, e.g. "kissing-wildebeest". Subsequent `helm install` commands (also with no name specified)
 will create new Releases with different names (even if for the same Chart). **All** of these Releases will then be returned when running `helm ls`, and therefore will also make it into your File after a `helm bulk save`.
 
 This would lead to greater processing times when running a `helm bulk load` or
 `helm bulk save`, and a larger persisted File, and could lead to unexpected `load` results.
 
-To prevent this, it's recommended to always name your Release when installing,
+To prevent this, it's recommended to **always name your Release when installing**,
 so you only have one current Release (and any upgrades to that will supersede,
 with version number incrementing).
 
