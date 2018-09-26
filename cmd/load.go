@@ -36,7 +36,6 @@ import (
 )
 
 var (
-	// loadCmd represents the load command
 	loadCmd = &cobra.Command{
 		Use:   "load",
 		Short: "Load Releases from File to Cluster",
@@ -50,33 +49,49 @@ var (
 			}
 			loadedReleases := Releases()
 			if len(loadedReleases) > 0 {
-				logReleases(loadedReleases, "Helm Releases to load:")
+				logReleases(loadedReleases, "Helm Releases present in File:")
 			} else {
 				panic("No Helm Releases found, they're essential for the Load cmd")
 			}
-			_, updateReleases := splitReleases(loadedReleases, client)
-			if nonAuthoritative {
-				logReleases(updateReleases, "Helm Releases to update:")
-			} else {
-				logReleases(updateReleases,
-					"Existing Helm Releases to purge (prior to reinstall):")
-				purge(updateReleases, client)
+			var updateReleases []*release.Release
+			if upgrade || delete {
+				_, updateReleases = splitReleases(loadedReleases, client)
+				if upgrade {
+					logReleases(updateReleases, "Existing Helm Releases to update:")
+				} else {
+					logReleases(updateReleases,
+						"Existing Helm Releases to purge (prior to reinstall):")
+					purge(updateReleases, client)
+				}
 			}
+			//split Releases a 2nd time, updateReleases may be different now if a delete
+			//has just happened.
 			installReleases, updateReleases := splitReleases(loadedReleases, client)
+			if len(installReleases) > 0 {
+				logReleases(installReleases, "Helm Releases to install:")
+			} else if !delete && !upgrade {
+				log.Println("No Releases found to install, maybe they already exist" +
+					" in the Cluster?")
+				os.Exit(0)
+			} else {
+				log.Println("No Releases found to delete or upgrade")
+			}
 			load(installReleases, updateReleases, client)
 		},
 	}
-	dryRun           bool
-	nonAuthoritative bool
+	dryRun  bool
+	upgrade bool
+	delete  bool
 )
 
 func init() {
 	loadCmd.Flags().BoolVarP(&dryRun, "dry-run", "r", false,
-		"Performs a no-op run, essentially just logging to indicate what would be"+
+		"Perform a no-op run, essentially just logging to indicate what would be"+
 			" done without dry-run enabled")
-	loadCmd.Flags().BoolVarP(&nonAuthoritative, "non-authoritive", "n", false,
-		"The file that Releases are loaded from is considered non-authoritative,"+
-			" so helm-bulk can handle Releases that already exist (using helm upgrade)")
+	loadCmd.Flags().BoolVarP(&upgrade, "upgrade", "u", false,
+		"Upgrade existing Releases")
+	loadCmd.Flags().BoolVarP(&delete, "delete", "d", false,
+		"Delete existing Releases")
 	rootCmd.AddCommand(loadCmd)
 }
 
