@@ -52,7 +52,10 @@ func init() {
 	rootCmd.AddCommand(saveCmd)
 }
 
-func releaseFromName(searchName string, releases []*release.Release) (targetRelease *release.Release) {
+//releaseFromName returns the Release in the provided slice for which the Name
+//matches the provided searchName string. If none match, nil is returned.
+func releaseFromName(searchName string,
+	releases []*release.Release) (targetRelease *release.Release) {
 	for _, release := range releases {
 		if release.Name == searchName {
 			targetRelease = release
