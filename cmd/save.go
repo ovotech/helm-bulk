@@ -52,6 +52,16 @@ func init() {
 	rootCmd.AddCommand(saveCmd)
 }
 
+func releaseFromName(searchName string, releases []*release.Release) (targetRelease *release.Release) {
+	for _, release := range releases {
+		if release.Name == searchName {
+			targetRelease = release
+			break
+		}
+	}
+	return
+}
+
 //save obtains a slice of deployed releases, base64 encodes each release, adds
 //the base64 string to a buffer, which it then writes to file.
 func save() {
@@ -63,7 +73,20 @@ func save() {
 	utils.PanicCheck(err)
 	var buffer bytes.Buffer
 	releases := releaseResp.GetReleases()
-	for i, release := range releases {
+	orderPreferences := utils.OrderPref()
+	targetReleases := make([]*release.Release, 0)
+	for _, orderedReleaseName := range orderPreferences {
+		targetRelease := releaseFromName(orderedReleaseName, releases)
+		if targetRelease != nil {
+			targetReleases = append(targetReleases, targetRelease)
+		}
+	}
+	for _, release := range releases {
+		if !utils.ContainsRelease(release, targetReleases) {
+			targetReleases = append(targetReleases, release)
+		}
+	}
+	for i, release := range targetReleases {
 		if i > 0 {
 			buffer.WriteString(",")
 		}

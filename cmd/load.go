@@ -150,21 +150,8 @@ func splitReleases(loadedReleases []*release.Release,
 	}
 	utils.PanicCheck(err)
 	for _, release := range loadedReleases {
-		if !containsRelease(release, existingReleases) {
+		if !utils.ContainsRelease(release, existingReleases) {
 			releases = append(releases, release)
-		}
-	}
-	return
-}
-
-//containsRelease returns a bool indicating whether the provided Release is
-//in the provided slice
-func containsRelease(queryRelease *release.Release,
-	targetReleases []*release.Release) (contains bool) {
-	for _, release := range targetReleases {
-		if queryRelease.GetName() == release.GetName() {
-			contains = true
-			break
 		}
 	}
 	return
