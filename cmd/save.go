@@ -65,19 +65,10 @@ func releaseFromName(searchName string,
 	return
 }
 
-//save obtains a slice of deployed releases, base64 encodes each release, adds
-//the base64 string to a buffer, which it then writes to file.
-func save() {
-	client := utils.Client()
-	var statusFilter = helm.ReleaseListStatuses([]release.Status_Code{
-		release.Status_DEPLOYED,
-	})
-	releaseResp, err := client.ListReleases(statusFilter)
-	utils.PanicCheck(err)
-	var buffer bytes.Buffer
-	releases := releaseResp.GetReleases()
+//targetReleases returns a slice of Releases based on the preferred ordering and
+//those currently installed.
+func targetReleases(releases []*release.Release) (targetReleases []*release.Release) {
 	orderPreferences := utils.OrderPref()
-	targetReleases := make([]*release.Release, 0)
 	for _, orderedReleaseName := range orderPreferences {
 		targetRelease := releaseFromName(orderedReleaseName, releases)
 		if targetRelease != nil {
@@ -89,6 +80,21 @@ func save() {
 			targetReleases = append(targetReleases, release)
 		}
 	}
+	return
+}
+
+//save obtains a slice of deployed releases, base64 encodes each release, adds
+//the base64 string to a buffer, which it then writes to file.
+func save() {
+	client := utils.Client()
+	var statusFilter = helm.ReleaseListStatuses([]release.Status_Code{
+		release.Status_DEPLOYED,
+	})
+	releaseResp, err := client.ListReleases(statusFilter)
+	utils.PanicCheck(err)
+	var buffer bytes.Buffer
+	releases := releaseResp.GetReleases()
+	targetReleases := targetReleases(releases)
 	for i, release := range targetReleases {
 		if i > 0 {
 			buffer.WriteString(",")
