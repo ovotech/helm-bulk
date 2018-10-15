@@ -1,27 +1,33 @@
 package utils
 
 import (
-	"io/ioutil"
-	"os"
+	"log"
 
-	yaml "gopkg.in/yaml.v2"
+	"github.com/spf13/viper"
 )
 
-type orderPreference struct {
-	Order []string `json:"order"`
+type config struct {
+	Order []string
 }
 
-const prefFilename = "orderPref.yaml"
+const (
+	prefFilename = "orderPref"
+	envPrefix    = "helm_bulk"
+)
 
 //OrderPref returns a slice containing the preferred ordering of Release names.
 // If it doesn't find any defined, it returns an empty slice.
-func OrderPref() (releaseOrderPref []string) {
-	if _, err := os.Stat(prefFilename); !os.IsNotExist(err) {
-		dat, err := ioutil.ReadFile(prefFilename)
-		PanicCheck(err)
-		var o orderPreference
-		PanicCheck(yaml.Unmarshal(dat, &o))
-		releaseOrderPref = o.Order
+func OrderPref(configDir string) (releaseOrderPref []string) {
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix(envPrefix)
+	viper.SetConfigName(prefFilename)
+	viper.AddConfigPath(configDir)
+	viper.ReadInConfig()
+	var c config
+	err := viper.Unmarshal(&c)
+	if err != nil {
+		log.Println(err)
 	}
+	releaseOrderPref = c.Order
 	return
 }

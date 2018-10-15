@@ -37,19 +37,24 @@ import (
 )
 
 // saveCmd represents the save command
-var saveCmd = &cobra.Command{
-	Use:   "save",
-	Short: "Save Releases from Cluster to File",
-	Long: `This command will base64 encode current deployed Helm Releases, and
+var (
+	saveCmd = &cobra.Command{
+		Use:   "save",
+		Short: "Save Releases from Cluster to File",
+		Long: `This command will base64 encode current deployed Helm Releases, and
 			write them to File.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("helm-bulk save called")
-		save()
-	},
-}
+		Run: func(cmd *cobra.Command, args []string) {
+			log.Println("helm-bulk save called")
+			save()
+		},
+	}
+	orderPrefConfigDir string
+)
 
 func init() {
 	rootCmd.AddCommand(saveCmd)
+	loadCmd.Flags().StringVarP(&orderPrefConfigDir, "order-pref-config-dir", "c", ".",
+		"Path (absolute or relative) of directory containing the orderPref.yaml config")
 }
 
 //releaseFromName returns the Release in the provided slice for which the Name
@@ -68,7 +73,7 @@ func releaseFromName(searchName string,
 //targetReleases returns a slice of Releases based on the preferred ordering and
 //those currently installed.
 func targetReleases(releases []*release.Release) (targetReleases []*release.Release) {
-	orderPreferences := utils.OrderPref()
+	orderPreferences := utils.OrderPref(orderPrefConfigDir)
 	for _, orderedReleaseName := range orderPreferences {
 		targetRelease := releaseFromName(orderedReleaseName, releases)
 		if targetRelease != nil {
