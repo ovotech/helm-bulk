@@ -37,19 +37,55 @@ import (
 )
 
 // saveCmd represents the save command
-var saveCmd = &cobra.Command{
-	Use:   "save",
-	Short: "Save Releases from Cluster to File",
-	Long: `This command will base64 encode current deployed Helm Releases, and
+var (
+	saveCmd = &cobra.Command{
+		Use:   "save",
+		Short: "Save Releases from Cluster to File",
+		Long: `This command will base64 encode current deployed Helm Releases, and
 			write them to File.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("helm-bulk save called")
-		save()
-	},
-}
+		Run: func(cmd *cobra.Command, args []string) {
+			log.Println("helm-bulk save called")
+			save()
+		},
+	}
+	orderPrefConfigDir string
+)
 
 func init() {
 	rootCmd.AddCommand(saveCmd)
+	loadCmd.Flags().StringVarP(&orderPrefConfigDir, "order-pref-config-dir", "c", ".",
+		"Path (absolute or relative) of directory containing the orderPref.yaml config")
+}
+
+//releaseFromName returns the Release in the provided slice for which the Name
+//matches the provided searchName string. If none match, nil is returned.
+func releaseFromName(searchName string,
+	releases []*release.Release) (targetRelease *release.Release) {
+	for _, release := range releases {
+		if release.Name == searchName {
+			targetRelease = release
+			break
+		}
+	}
+	return
+}
+
+//targetReleases returns a slice of Releases based on the preferred ordering and
+//those currently installed.
+func targetReleases(releases []*release.Release) (targetReleases []*release.Release) {
+	orderPreferences := utils.OrderPref(orderPrefConfigDir)
+	for _, orderedReleaseName := range orderPreferences {
+		targetRelease := releaseFromName(orderedReleaseName, releases)
+		if targetRelease != nil {
+			targetReleases = append(targetReleases, targetRelease)
+		}
+	}
+	for _, release := range releases {
+		if !utils.ContainsRelease(release, targetReleases) {
+			targetReleases = append(targetReleases, release)
+		}
+	}
+	return
 }
 
 //save obtains a slice of deployed releases, base64 encodes each release, adds
@@ -63,7 +99,8 @@ func save() {
 	utils.PanicCheck(err)
 	var buffer bytes.Buffer
 	releases := releaseResp.GetReleases()
-	for i, release := range releases {
+	targetReleases := targetReleases(releases)
+	for i, release := range targetReleases {
 		if i > 0 {
 			buffer.WriteString(",")
 		}

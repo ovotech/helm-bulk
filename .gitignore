@@ -8,3 +8,4 @@ helm-bulk*
 helm-releases*
 checksum.txt
 .DS_Store
+orderPref.yaml
