@@ -5,35 +5,21 @@ or Cluster to File, respectively.
 
 ## Installation
 
-Clone the repo:
+Install the latest version:
 
-```
-$ git clone git@github.com:ovotech/helm-bulk.git
-```
-
-Build the binary:
-
-```
-$ cd helm-bulk
-
-$ go build
+```shell
+$ helm plugin install https://github.com/ovotech/helm-bulk
 ```
 
-Ensure the `command` path in `plugin.yaml` is the absolute path to the binary
-you've just built (note: don't use `~` in the path). The binary name
-(should be "helm-bulk") needs to be present at the end.
+Install a specific version:
 
-The plugin hasn't been open sourced yet, so the absolute path to the local
-checked out git repo (rather than the git https url) must be given to Helm in
-order to install it.
-
-```
-$ helm plugin install <abs_path_to_local_git_dir>
+```shell
+$ helm plugin install https://github.com/ovotech/helm-bulk --version 0.0.20
 ```
 
 This will:
 
-1. Find the `plugin.yaml` in the directory you give it
+1. Find the `plugin.yaml` in the project root
 2. Execute the file specified in `hooks: install:` (useful for any pre-install
   operations)
 3. Copy the file that's specified in the `command` value into the Helm plugin
@@ -41,7 +27,7 @@ directory (defaults to `.helm/plugins/`). This is the file that'll be executed
 when you invoke the plugin with Helm, i.e. `helm bulk`.
 
 The final String of the output, on a successful install, will be:
-`Installed plugin: bulk`.
+`helm-bulk [version] is correctly installed.`.
 
 
 You can also verify it's been installed using:
@@ -50,7 +36,7 @@ You can also verify it's been installed using:
 $ helm plugin list                                     
 
 NAME	VERSION	DESCRIPTION
-bulk	0.0.8  	Load or Save Helm Releases from File to Cluster, or Cluster to
+bulk	0.0.20  	Load or Save Helm Releases from File to Cluster, or Cluster to
 File, respectively
 ```
 
@@ -131,7 +117,7 @@ order:
 
 ..into the working directory, or into a custom directory and specifying this
 directory in the `-c, --order-pref-config-dir` flag when the plugin is called.
-The config file **must** be named `orderPref.yaml`. 
+The config file **must** be named `orderPref.yaml`.
 
 Alternatively the order can be specified in an environment variable like so:
 
