@@ -15,9 +15,9 @@
 
 #copied almost verbatim from
 #https://github.com/nouney/helm-gcs/blob/master/scripts/install.sh
-cd $HELM_PLUGIN_DIR
+cd $HELM_PLUGIN_DIR/helm-bulk
 version="$(cat plugin.yaml | grep "version" | cut -d '"' -f 2)"
-echo "Installing helm-bulk ${version} ..."
+echo "Installing helm-bulk v${version} ..."
 
 # Find correct archive name
 unameOut="$(uname -s)"
@@ -31,7 +31,7 @@ case "${unameOut}" in
 esac
 
 arch=`uname -m`
-url="https://github.com/ovotech/helm-bulk/releases/download/${version}/helm-bulk_${version}_${os}_${arch}.tar.gz"
+url="https://github.com/ovotech/helm-bulk/releases/download/v${version}/helm-bulk_${version}_${os}_${arch}.tar.gz"
 
 if [ "$url" = "" ]
 then
