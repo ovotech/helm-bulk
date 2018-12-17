@@ -22,14 +22,17 @@ package utils
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"k8s.io/client-go/kubernetes"
 	//https://github.com/helm/helm/issues/3806#issuecomment-378072159
+
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/rest"
 	"k8s.io/helm/pkg/helm"
 	"k8s.io/helm/pkg/helm/portforwarder"
 	kube "k8s.io/helm/pkg/kube"
+	"k8s.io/helm/pkg/tlsutil"
 )
 
 //Client creates a Helm client and checks the connection works
@@ -41,7 +44,21 @@ func Client() (client *helm.Client) {
 	PanicCheck(err)
 	log.Println("Starting Helm client")
 	tillerHost := fmt.Sprintf("127.0.0.1:%d", pf.Local)
-	client = helm.NewClient(helm.Host(tillerHost))
+	options := []helm.Option{
+		helm.Host(tillerHost),
+	}
+	helmHome := os.Getenv("HELM_HOME")
+	opts := tlsutil.Options{
+		ServerName:         "",
+		CaCertFile:         helmHome + "/ca.pem",
+		CertFile:           helmHome + "/ca.cert.pem",
+		KeyFile:            helmHome + "/ca.key.pem",
+		InsecureSkipVerify: false,
+	}
+	tlsCfg, err := tlsutil.ClientConfig(opts)
+	PanicCheck(err)
+	options = append(options, helm.WithTLS(tlsCfg))
+	client = helm.NewClient(options...)
 	log.Println("Checking Helm client connection")
 	_, errb := client.GetVersion()
 	PanicCheck(errb)

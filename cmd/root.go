@@ -31,7 +31,12 @@ import (
 
 var cfgFile string
 var local bool
+var disableTLS bool
 var filePrefix string
+var tlsKey string
+var tlsCert string
+var caCert string
+var tlsServerName string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -51,8 +56,13 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize()
+	loadCmd.Flags().BoolVarP(&disableTLS, "disable-tls", "t", false, "")
 	rootCmd.PersistentFlags().StringVarP(&filePrefix, "fileprefix", "f",
 		"helm-releases", "File prefix to use with a Load or Save command")
+	rootCmd.PersistentFlags().StringVarP(&tlsKey, "tls-key-path", "", "", "")
+	rootCmd.PersistentFlags().StringVarP(&tlsCert, "tls-cert-path", "", "", "")
+	rootCmd.PersistentFlags().StringVarP(&caCert, "ca-cert-path", "", "", "")
+	rootCmd.PersistentFlags().StringVarP(&tlsServerName, "tls-server-name", "", "", "")
 }
 
 // initConfig reads in config file and ENV variables if set.
