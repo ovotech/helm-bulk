@@ -71,15 +71,64 @@ you've switched to whatever Context/Cluster you want to use (e.g. `kubectl
   config use-context <context_name>` or `gcloud container clusters....` to
   re-auth into your target Cluster).
 
+By default, `helm-bulk` uses TLS in its communication with Tiller. It can
+be forced to not use TLS, but it's not recommended to do so. You'll need to
+generate `*.key.pem`, `*.csr.pem` and `*.cert.pem` files for who/what-ever is
+using `helm-bulk`. The `*.cert.pem` will be signed by a CA key you'll have
+generated at some point prior when you enabled TLS on Tiller.
+
+Command dump for generating certs:
+
+```
+###########################################################################
+######### If you've not already, generate the CA key and cert ############
+
+$ openssl genrsa -out ca.key.pem 4096
+
+$ openssl req -key ca.key.pem -new -x509 \
+    -days 7300 -sha256 \
+    -out ca.cert.pem \
+    -subj "/CN=<team_or_org>/O=<team_or_org>"
+
+###########################################################################
+
+# Generate a user key
+$ openssl genrsa -out helm.key.pem 4096
+
+# Generate a CSR
+$ openssl req -new -sha256 \
+    -key helm.key.pem \
+    -out helm.csr.pem \
+    -subj "/CN=<team_or_org>/O=<team_or_org>"
+
+# Generate a signed cert
+$ openssl x509 -req -days 365 \
+    -CA ca.cert.pem \
+    -CAkey ca.key.pem \
+    -CAcreateserial \
+    -in helm.csr.pem \
+    -out helm.cert.pem
+
+# This step is optional, but recommended. Copy the CA cert, and the user cert
+# and key to the `HELM_HOME` directory. This allows you to omit the TLS filepath
+# fields when using helm-bulk.
+$ cp ca.cert.pem $(helm home)/ca.pem \
+    && cp helm.cert.pem $(helm home)/cert.pem \
+    && cp helm.key.pem $(helm home)/key.pem
+
+```
+Credit to [this](https://medium.com/google-cloud/install-secure-helm-in-gke-254d520061f7)
+blog post where these commands have been copied from.
+
 If end-to-end testing, try following these commands through in order, otherwise
 they can be run individually:
 
 ```
-# Use Helm to list your Releases
-$ helm ls
+# Use Helm to list your Releases (omit --tls if not using TLS, booo...)
+$ helm ls --tls
 
 # Save deployed Helm Releases to archive (defaults to "./helm-releases.tar.gz")
-$ helm bulk save
+$ helm bulk save -s=<csr_server_name>
 
 # Print out a list of Helm Releases currently stored in the archive
 # (defaults to "./helm-releases.tar.gz")
@@ -92,11 +141,12 @@ $ helm bulk show
 # kubectl context to a fresh Cluster
 ###############################################################################
 
-# Load Helm Releases from File into your Cluster
-$ helm bulk load
+# Load Helm Releases from File into your Cluster (replace -s flag with
+# -t=false if not using TLS)
+$ helm bulk load -s=<csr_server_name>
 
 # Use Helm to list the Releases again
-$ helm ls
+$ helm ls --tls
 ```
 
 ## Idempotency
@@ -131,7 +181,7 @@ order:
 
 ..into the working directory, or into a custom directory and specifying this
 directory in the `-c, --order-pref-config-dir` flag when the plugin is called.
-The config file **must** be named `orderPref.yaml`. 
+The config file **must** be named `orderPref.yaml`.
 
 Alternatively the order can be specified in an environment variable like so:
 
