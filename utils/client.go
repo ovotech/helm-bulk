@@ -30,10 +30,11 @@ import (
 	"k8s.io/helm/pkg/helm"
 	"k8s.io/helm/pkg/helm/portforwarder"
 	kube "k8s.io/helm/pkg/kube"
+	"k8s.io/helm/pkg/tlsutil"
 )
 
 //Client creates a Helm client and checks the connection works
-func Client() (client *helm.Client) {
+func Client(tlsKey, tlsCert, caCert, tlsServerName string, disableTLS bool) (client *helm.Client) {
 	config, kclient, err := getKubeClient("", "")
 	PanicCheck(err)
 	log.Println("Portforwarding from Kubernetes Tiller pod")
@@ -41,7 +42,27 @@ func Client() (client *helm.Client) {
 	PanicCheck(err)
 	log.Println("Starting Helm client")
 	tillerHost := fmt.Sprintf("127.0.0.1:%d", pf.Local)
-	client = helm.NewClient(helm.Host(tillerHost))
+	options := []helm.Option{
+		helm.Host(tillerHost),
+	}
+	if !disableTLS {
+		if tlsServerName == "" {
+			panic("If using TLS, serverName must be set. This is the value of '/O='" +
+				" that you used in the subject field when creating the CSR.")
+		}
+		opts := tlsutil.Options{
+			ServerName:         tlsServerName,
+			CaCertFile:         caCert,
+			CertFile:           tlsCert,
+			KeyFile:            tlsKey,
+			InsecureSkipVerify: false,
+		}
+		tlsCfg, err := tlsutil.ClientConfig(opts)
+		PanicCheck(err)
+		options = append(options, helm.WithTLS(tlsCfg))
+	}
+
+	client = helm.NewClient(options...)
 	log.Println("Checking Helm client connection")
 	_, errb := client.GetVersion()
 	PanicCheck(errb)
