@@ -91,7 +91,7 @@ func targetReleases(releases []*release.Release) (targetReleases []*release.Rele
 //save obtains a slice of deployed releases, base64 encodes each release, adds
 //the base64 string to a buffer, which it then writes to file.
 func save() {
-	client := utils.Client()
+	client := utils.Client(tlsKey, tlsCert, caCert, tlsServerName, disableTLS)
 	var statusFilter = helm.ReleaseListStatuses([]release.Status_Code{
 		release.Status_DEPLOYED,
 	})

@@ -56,13 +56,18 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize()
+	helmHome := os.Getenv("HELM_HOME")
 	loadCmd.Flags().BoolVarP(&disableTLS, "disable-tls", "t", false, "")
 	rootCmd.PersistentFlags().StringVarP(&filePrefix, "fileprefix", "f",
 		"helm-releases", "File prefix to use with a Load or Save command")
-	rootCmd.PersistentFlags().StringVarP(&tlsKey, "tls-key-path", "", "", "")
-	rootCmd.PersistentFlags().StringVarP(&tlsCert, "tls-cert-path", "", "", "")
-	rootCmd.PersistentFlags().StringVarP(&caCert, "ca-cert-path", "", "", "")
-	rootCmd.PersistentFlags().StringVarP(&tlsServerName, "tls-server-name", "", "", "")
+	rootCmd.PersistentFlags().StringVarP(&tlsKey, "tls-key-path", "k",
+		helmHome+"/ca.key.pem", "Filepath of TLS key")
+	rootCmd.PersistentFlags().StringVarP(&tlsCert, "tls-cert-path", "p",
+		helmHome+"/ca.cert.pem", "Filepath of TLS cert")
+	rootCmd.PersistentFlags().StringVarP(&caCert, "ca-cert-path", "a",
+		helmHome+"/ca.pem", "Filepath of CA cert")
+	rootCmd.PersistentFlags().StringVarP(&tlsServerName, "tls-server-name", "s",
+		"", "TLS server name")
 }
 
 // initConfig reads in config file and ENV variables if set.
