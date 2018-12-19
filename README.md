@@ -103,8 +103,8 @@ $ cp ca.cert.pem $(helm home)/ca.pem \
     && cp helm.key.pem $(helm home)/key.pem
 
 ```
-Credit to [this](https://medium.com/google-cloud/install-secure-helm-in-gke-254d520061f7)
-blog post where these commands have been copied from.
+Credit to [this repo](https://github.com/helm/helm/blob/master/docs/tiller_ssl.md)
+where these commands have been copied from.
 
 If end-to-end testing, try following these commands through in order, otherwise
 they can be run individually:
