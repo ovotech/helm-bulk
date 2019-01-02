@@ -55,11 +55,11 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&filePrefix, "fileprefix", "f",
 		"helm-releases", "File prefix to use with a Load or Save command")
 	rootCmd.PersistentFlags().StringVarP(&tlsKey, "tls-key-path", "k",
-		helmHome+"key.pem", "Filepath of TLS key")
+		helmHome+"/key.pem", "Filepath of TLS key")
 	rootCmd.PersistentFlags().StringVarP(&tlsCert, "tls-cert-path", "p",
-		helmHome+"cert.pem", "Filepath of TLS cert")
+		helmHome+"/cert.pem", "Filepath of TLS cert")
 	rootCmd.PersistentFlags().StringVarP(&caCert, "ca-cert-path", "a",
-		helmHome+"ca.pem", "Filepath of CA cert")
+		helmHome+"/ca.pem", "Filepath of CA cert")
 	rootCmd.PersistentFlags().StringVarP(&tlsServerName, "tls-server-name", "s",
 		"", "TLS server name")
 }
