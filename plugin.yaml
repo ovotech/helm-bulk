@@ -1,5 +1,5 @@
 name: "bulk"
-version: "0.0.23"
+version: "0.0.24"
 usage: "Load or Save Helm Releases"
 description: |-
   Load or Save Helm Releases from File to Cluster, or Cluster to File, respectively
