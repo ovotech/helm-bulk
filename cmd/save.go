@@ -16,8 +16,6 @@ package cmd
 
 import (
 	"bytes"
-	"crypto/md5"
-	"encoding/hex"
 	"io/ioutil"
 	"log"
 	"os"
@@ -108,12 +106,4 @@ func save() {
 		[]string{textFilename()}))
 	log.Println("Wrote " + strconv.Itoa(len(releases)) + " Helm Releases to file")
 	os.Remove(textFilename())
-}
-
-//md5Hash returns a byte slice representing the md5 hash of the provided string
-func md5Hash(text string) (hash string) {
-	hasher := md5.New()
-	hasher.Write([]byte(text))
-	hash = hex.EncodeToString(hasher.Sum(nil))
-	return
 }

@@ -99,14 +99,19 @@ func addReleasesToBuffer(releases []*release.Release, buffer *bytes.Buffer) *byt
 	return buffer
 }
 
+func addHeaderToBuffer(header string, buffer *bytes.Buffer) *bytes.Buffer {
+	buffer.WriteString(header)
+	buffer.WriteString("\n\n")
+	return buffer
+}
+
 //logReleases logs the names of Releases i) loaded from file and (of those)
 //ii) currently installed, or a message indicating no Releases were loaded from
 //file
 func logReleases(releases []*release.Release, header string) {
 	if len(releases) > 0 {
 		var buffer bytes.Buffer
-		buffer.WriteString(header)
-		buffer.WriteString("\n\n")
+		addHeaderToBuffer(header, &buffer)
 		addReleasesToBuffer(releases, &buffer)
 		log.Println(buffer.String())
 	}
