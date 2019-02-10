@@ -95,7 +95,7 @@ jobs:
 
       - run:
            name: go test
-           command: go test
+           command: go test ./...
 
 workflows:
   version: 2
